@@ -55,6 +55,7 @@ def inverse_gauss(order, matrix):
         
 
 order = int(input("Stopień macierzy: "))
+array = [[(order + 1 if x == y else 1) for x in range(order)] for y in range(order)]
 
 if order < 11:
     print()
@@ -63,7 +64,6 @@ if order < 11:
     print()
 
 if len(sys.argv) == 1 or sys.argv[1] == 'numpy':
-    array = [[(order + 1 if x == y else 1) for x in range(order)] for y in range(order)]
     print('Obliczanie macierzy odwrotnej z wykorzystaniem biblioteki NumPy...', '\n')
     inverse_numpy(order, array)
     print()
