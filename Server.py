@@ -32,5 +32,5 @@ class Server:
             )
     
     def run_server(self):
-        self.app.run('localhost')
+        self.app.run('0.0.0.0:5000')
         
