@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chmury obliczeniowe</title>
+
+    <link rel="stylesheet" href="css/lib/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="page-header pt-5 pb-4">
+            <h4>Wykorzystanie chmur obliczeniowych do wyznaczania natężeń linii dyfrakcyjnych.</h4>
+            Aplikacja służy do wyznaczania natężeń linii dyfakcyjnych w modelu supersieci idealnej.
+        </div>
+    
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="inversion-tab" data-toggle="tab" href="#inversion-panel" role="tab" aria-controls="inversion-panel" aria-selected="true">Obliczanie macierzy odwrotnej</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="diffraction-tab" data-toggle="tab" href="#diffraction-panel" role="tab" aria-controls="diffraction-panel" aria-selected="false">Wyznaczanie natężeń linii dyfrakcyjnych</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="inversion-panel" role="tabpanel" aria-labelledby="inversion-tab">
+                <div id="inversion-container" class="pt-4">
+                    Obliczanie macierzy odwrotnej względem macierzy diagonalnie dominującej zadanego stopnia.
+                    <div class="pt-4">
+                        Stopień macierzy: 
+                        <input type="number" id="order-input" min="1"/>
+                        <span id="order-error" class="error text-danger"></span>
+                        <div id="inverse-spinner" class="spinner-border spinner-border-sm d-none" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="float-right">
+                            <button id="inverse-gauss-button" class="btn btn-primary btn-sm" onclick="inverseGauss();">Oblicz metodą Gaussa-Jordana</button>
+                            <button id="inverse-numpy-button" class="btn btn-primary btn-sm" onclick="inverseNumPy();">Oblicz biblioteką NumPy</button>
+                            <button id="clear-button" class="btn btn-primary btn-sm" onclick="clearPanel();">Wyczyść</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="diffraction-panel" role="tabpanel" aria-labelledby="diffraction-tab">
+                <div id="diffraction-container" class="pt-4">
+                    [ WYZNACZANIE NATĘŻEŃ LINII DYFRAKCYJNYCH ]
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/lib/jquery-3.5.0.min.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

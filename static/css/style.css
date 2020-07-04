@@ -1,0 +1,28 @@
+.inversion-input, .equations-input {
+    width: 30px;
+}
+
+.echelon-matrix td {
+   border: none;
+}
+
+.echelon-matrix tr {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.echelon-matrix tr:first-child td:first-child {
+    border-top: 1px solid black;
+}
+
+.echelon-matrix tr:first-child td:last-child {
+    border-top: 1px solid black;
+}
+
+.echelon-matrix tr:last-child td:first-child {
+    border-bottom: 1px solid black;
+}
+
+.echelon-matrix tr:last-child td:last-child {
+    border-bottom: 1px solid black;
+}
