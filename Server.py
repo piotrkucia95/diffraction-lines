@@ -1,9 +1,11 @@
 from Math import Math
 from flask import Flask, jsonify
+import os
 
 class Server:
     def __init__(self):  
         self.app = Flask(__name__, static_url_path='')
+        self.port = int(os.environ.get("PORT", 5000))
         self.math = Math()
         self.set_routes()
         self.run_server()   
@@ -32,5 +34,5 @@ class Server:
             )
     
     def run_server(self):
-        self.app.run('0.0.0.0')
+        self.app.run(host='0.0.0.0', port=self.port)
         
