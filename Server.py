@@ -35,12 +35,12 @@ class Server:
 
         @self.app.route('/diffraction-intensities')
         def calculate_intensities():
-            d_a = request.args.get('dA')
-            d_b = request.args.get('dB')
-            n_a = request.args.get('NA')
-            n_b = request.args.get('NB')
-            n = request.args.get('N')
-            intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, n_b, n)
+            d_a = int(request.args.get('dA'))
+            d_b = int(request.args.get('dB'))
+            n_a = int(request.args.get('nA'))
+            m_b = int(request.args.get('mB'))
+            n = int(request.args.get('N'))
+            intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, m_b, n)
             return jsonify(
                 intensities=intensities_tuple[0],
                 time=intensities_tuple[1]

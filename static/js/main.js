@@ -14,7 +14,7 @@ var sendInverseRequest = function(path, order) {
     initInverseRequest();
     jQuery.ajax({url: path + order, type: 'get'})
     .done((data) => {
-        handleInverseResponse(data);
+        handleInverseResponse(data, order);
     })
     .fail((error) => {
         console.log(error);
@@ -24,29 +24,31 @@ var sendInverseRequest = function(path, order) {
     });
 };
 
-var handleInverseResponse = function(results) {
-    displayInverseResults(results)
+var handleInverseResponse = function(results, order) {
+    displayInverseResults(results, order);
 }
 
 var getIntensities = function() {
     var dA = jQuery('#da-input').val();
     var dB = jQuery('#db-input').val();
     var nA = jQuery('#na-input').val();
-    var nB = jQuery('#nb-input').val();
+    var mB = jQuery('#mb-input').val();
     var n = jQuery('#n-input').val();
-    if (!dA || !dB || !nA || !nB || !n) {
+    if (!dA || !dB || !nA || !mB || !n) {
         jQuery('#diffraction-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
-        sendIntensitiesRequest('?dA=' + dA + '&dB=' + dB + '&NA=' + nA + '&NB=' + nB + '&N=' + n);
+        sendIntensitiesRequest('?dA=' + dA + '&dB=' + dB + '&nA=' + nA + '&mB=' + mB + '&N=' + n);
     }
 }
 
 var sendIntensitiesRequest = function(queryString) {
+    clearChart();
     jQuery('#diffraction-spinner').removeClass('d-none');
     jQuery.ajax({url: '/diffraction-intensities' + queryString, type: 'get'})
     .done((data) => {
-        updateChartData(data.intensities);
+        console.log(data);
+        createChart(data.intensities);
         timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
         jQuery('#diffraction-results').append(timeMessage);
     })
@@ -74,8 +76,10 @@ var createDataPoints = function(intensities) {
     return dataPoints;
 }
 
-var createChart = function() {
-    chart = new CanvasJS.Chart("chartContainer", {            
+var createChart = function(intensities) {
+    chart = new CanvasJS.Chart("chartContainer", {
+        exportEnabled: true,
+	    animationEnabled: true,    
         title:{
             text: "Natężenie linii dyfrakcyjnych w zależności od kąta 2θ"              
         },
@@ -90,9 +94,9 @@ var createChart = function() {
             dataPoints: []
         }]
     });
-    chart.render();
+    updateChartData(intensities);
 }
 
 window.onload = function () {
-    createChart();
+    createChart([]);
 }

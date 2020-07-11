@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import time 
 import sys
 
@@ -49,12 +50,42 @@ class Math:
         end_time = time.time()
         return (inverse, (end_time - start_time))
 
-    def calculate_intensities(self, d_a, d_b, n_a, n_b, n):
-
+    def calculate_intensities(self, d_a, d_b, n_a, m_b, n):
         start_time = time.time()
 
-        # TODO: Diffraction intensities calculations
-        intensities = [[0, 0], [10, 10], [20, 5], [30, 30], [40, 100], [50, 105], [60, 70], [70, 50], [80, 55], [90, 30], [100, 10]]
+        l = n_a * d_a + d_b * m_b
+        w = n * l
+        w_a = 0
+        w_b = 0
+        g_a = 1
+        g_b = 1
+        i = 1
+        pi = 3.14
+        lambda_length = 1
+
+        intensities = []
+        for _2_theta in range(0, 18001):
+            rad_2_theta = math.radians(_2_theta / 100)
+            sin_2_theta = math.sin(rad_2_theta)
+            cos_2_theta = math.cos(rad_2_theta)
+
+            rad_theta = math.radians(_2_theta / 200)
+            sin_theta = math.sin(rad_theta)
+
+            s = sin_theta / lambda_length
+
+            sum_a = 0
+            for x_ai in range(1, n_a*n + 1):
+                sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(i * pi * x_ai * s))
+                # sum_a += np.exp(i * pi * x_ai * s)
+
+            sum_b = 0
+            for x_bi in range(1, m_b*n + 1):
+                sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(i * pi * x_bi * s))
+                # sum_b = np.exp(i * pi * x_bi * s)
+
+            intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow((sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
+            intensities.append([_2_theta/100, intensity])
 
         end_time = time.time()
 

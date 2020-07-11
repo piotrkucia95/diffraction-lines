@@ -3,9 +3,9 @@ var initInverseRequest = function() {
     jQuery('#inverse-spinner').removeClass('d-none');
 }
 
-var displayInverseResults = function(results) {
+var displayInverseResults = function(results, order) {
     var inverseHTML = '';
-    if (results.inverse.length < 6) {
+    if (order < 6) {
         inverseHTML = '<div id="echelon" class="pt-4">Macierz odwrotna:'
         inverseHTML += '<table class="echelon-matrix mt-2">';
         for (let row of results.inverse) {
@@ -17,7 +17,7 @@ var displayInverseResults = function(results) {
         }
         inverseHTML += '</table>';
     }
-    inverseHTML += '<div id="inverse-time" class="mt-3">' + (results.inverse.length <= 5 ? '' : 'Otrzymano macierz odwrotną. ') + 'Czas obliczeń: ' + results.time + 's.</div>';
+    inverseHTML += '<div id="inverse-time" class="mt-3">' + (order < 6 ? '' : 'Otrzymano macierz odwrotną. ') + 'Czas obliczeń: ' + results.time + 's.</div>';
     jQuery('#inversion-container').append(inverseHTML);
 }
 
