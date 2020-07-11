@@ -7,45 +7,85 @@
 
     <link rel="stylesheet" href="css/lib/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/style.css"/>
+
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
-<body>
-    
+<body class="pt-5 pb-5">
     <div class="container">
-        <div class="page-header pt-5 pb-4">
+        <div class="page-header pb-4">
             <h4>Wykorzystanie chmur obliczeniowych do wyznaczania natężeń linii dyfrakcyjnych.</h4>
             Aplikacja służy do wyznaczania natężeń linii dyfakcyjnych w modelu supersieci idealnej.
         </div>
     
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="inversion-tab" data-toggle="tab" href="#inversion-panel" role="tab" aria-controls="inversion-panel" aria-selected="true">Obliczanie macierzy odwrotnej</a>
+                <a class="nav-link" id="inversion-tab" data-toggle="tab" href="#inversion-panel" role="tab" aria-controls="inversion-panel" aria-selected="true">Obliczanie macierzy odwrotnej</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="diffraction-tab" data-toggle="tab" href="#diffraction-panel" role="tab" aria-controls="diffraction-panel" aria-selected="false">Wyznaczanie natężeń linii dyfrakcyjnych</a>
+                <a class="nav-link active" id="diffraction-tab" data-toggle="tab" href="#diffraction-panel" role="tab" aria-controls="diffraction-panel" aria-selected="false">Wyznaczanie natężeń linii dyfrakcyjnych</a>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="inversion-panel" role="tabpanel" aria-labelledby="inversion-tab">
+            <div class="tab-pane fade" id="inversion-panel" role="tabpanel" aria-labelledby="inversion-tab">
                 <div id="inversion-container" class="pt-4">
                     Obliczanie macierzy odwrotnej względem macierzy diagonalnie dominującej zadanego stopnia.
                     <div class="pt-4">
-                        Stopień macierzy: 
-                        <input type="number" id="order-input" min="1"/>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="order-input">Stopień macierzy:</label>
+                                    <input type="number" min="1" class="form-control" id="order-input" >
+                                </div>
+                            </div>
+                            <div class="col-9 text-right">
+                                <div id="inverse-spinner" class="spinner-border spinner-border-sm mr-2 d-none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <button id="inverse-gauss-button" class="btn btn-primary btn-sm" onclick="inverseGauss();">Oblicz metodą Gaussa-Jordana</button>
+                                <button id="inverse-numpy-button" class="btn btn-primary btn-sm" onclick="inverseNumPy();">Oblicz biblioteką NumPy</button>
+                                <button id="clear-button" class="btn btn-primary btn-sm" onclick="clearPanel();">Wyczyść</button>
+                            </div>
+                        </div>
                         <span id="order-error" class="error text-danger"></span>
-                        <div id="inverse-spinner" class="spinner-border spinner-border-sm d-none" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        <div class="float-right">
-                            <button id="inverse-gauss-button" class="btn btn-primary btn-sm" onclick="inverseGauss();">Oblicz metodą Gaussa-Jordana</button>
-                            <button id="inverse-numpy-button" class="btn btn-primary btn-sm" onclick="inverseNumPy();">Oblicz biblioteką NumPy</button>
-                            <button id="clear-button" class="btn btn-primary btn-sm" onclick="clearPanel();">Wyczyść</button>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="diffraction-panel" role="tabpanel" aria-labelledby="diffraction-tab">
+            <div class="tab-pane fade show active" id="diffraction-panel" role="tabpanel" aria-labelledby="diffraction-tab">
                 <div id="diffraction-container" class="pt-4">
-                    [ WYZNACZANIE NATĘŻEŃ LINII DYFRAKCYJNYCH ]
+                    Wyznaczanie natężeń linii dyfrakcyjnych w modelu supersieci idealnej.
+                    <div class="pt-4 row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="da-input">d<sub>A</sub>:</label>
+                                <input type="number" min="1" class="form-control" id="da-input" >
+                            </div>
+                            <div class="form-group">
+                                <label for="db-input">d<sub>B</sub>:</label>
+                                <input type="number" min="1" class="form-control" id="db-input" >
+                            </div>
+                            <div class="form-group">
+                                <label for="na-input">N<sub>A</sub>:</label>
+                                <input type="number" min="1" class="form-control" id="na-input" >
+                            </div>
+                            <div class="form-group">
+                                <label for="db-input">N<sub>B</sub>:</label>
+                                <input type="number" min="1" class="form-control" id="db-input" >
+                            </div>
+                            <div class="form-group">
+                                <label for="n-input">N:</label>
+                                <input type="number" min="1" class="form-control" id="n-input" >
+                            </div>
+                            <div class="diffraction-buttons">
+                                <button id="intensities-button" class="btn btn-primary btn-sm" onclick="calculateIntensities();">Generuj wykres</button>
+                                <button id="clear-chart-button" class="btn btn-primary btn-sm" onclick="clearChart();">Wyczyść</button>
+                            </div>
+                        </div>
+                        <div class="col-9">
+                            <div class="w-100">
+                                <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -53,6 +93,7 @@
     </div>
 
     <script src="js/lib/jquery-3.5.0.min.js"></script>
+    <script src="js/lib/canvasjs.min.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
 </body>
