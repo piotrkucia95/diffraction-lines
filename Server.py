@@ -1,5 +1,5 @@
 from Math import Math
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import os
 
 class Server:
@@ -31,6 +31,19 @@ class Server:
             return jsonify(
                 inverse=inverse_tuple[0] if int(order) <= 10 else [],
                 time=inverse_tuple[1]
+            )
+
+        @self.app.route('/diffraction-intensities')
+        def calculate_intensities():
+            d_a = request.args.get('dA')
+            d_b = request.args.get('dB')
+            n_a = request.args.get('NA')
+            n_b = request.args.get('NB')
+            n = request.args.get('N')
+            intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, n_b, n)
+            return jsonify(
+                intensities=intensities_tuple[0],
+                time=intensities_tuple[1]
             )
     
     def run_server(self):

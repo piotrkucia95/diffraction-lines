@@ -48,3 +48,14 @@ class Math:
 
         end_time = time.time()
         return (inverse, (end_time - start_time))
+
+    def calculate_intensities(self, d_a, d_b, n_a, n_b, n):
+
+        start_time = time.time()
+
+        # TODO: Diffraction intensities calculations
+        intensities = [[0, 0], [10, 10], [20, 5], [30, 30], [40, 100], [50, 105], [60, 70], [70, 50], [80, 55], [90, 30], [100, 10]]
+
+        end_time = time.time()
+
+        return (intensities, (end_time - start_time))
