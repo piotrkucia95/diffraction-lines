@@ -30,7 +30,7 @@
                 <div id="diffraction-container" class="pt-4">
                     Wyznaczanie natężeń linii dyfrakcyjnych w modelu supersieci idealnej.
                     <div class="pt-4 row">
-                        <div class="col-3">
+                        <div class="col-md-3 col-sm-12">
                             <div class="form-group">
                                 <label for="da-input">d<sub>A</sub>:</label>
                                 <input type="number" min="1" class="form-control" id="da-input" >
@@ -53,14 +53,14 @@
                             </div>
                             <div id="diffraction-error" class="form-group text-danger d-none">Wprowadź wszystkie wartości.</div>
                             <div class="diffraction-buttons">
-                                <button id="intensities-button" class="btn btn-primary btn-sm" onclick="getIntensities();">Generuj wykres</button>
-                                <button id="clear-chart-button" class="btn btn-primary btn-sm" onclick="clearChart();">Wyczyść</button>
+                                <button id="intensities-button" class="btn btn-primary btn-sm m-1" onclick="getIntensities();">Generuj wykres</button>
+                                <button id="clear-chart-button" class="btn btn-primary btn-sm m-1" onclick="clearChart();">Wyczyść</button>
                                 <div id="diffraction-spinner" class="spinner-border spinner-border-sm ml-2 d-none" role="status">
                                     <span class="sr-only">Loading...</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-9">
+                        <div class="col-md-9 col-sm-12">
                             <div id="diffraction-results" class="w-100 p-2">
                                 <div id="chartContainer" class="chart" style="height: 400px; width: 100%;"></div>
                             </div>
@@ -73,19 +73,19 @@
                     Obliczanie macierzy odwrotnej względem macierzy diagonalnie dominującej zadanego stopnia.
                     <div class="pt-4">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
                                     <label for="order-input">Stopień macierzy:</label>
                                     <input type="number" min="1" class="form-control" id="order-input" >
                                 </div>
                             </div>
-                            <div class="col-9 text-right">
+                            <div class="col-md-9 col-sm-12 text-right">
                                 <div id="inverse-spinner" class="spinner-border spinner-border-sm mr-2 d-none" role="status">
                                     <span class="sr-only">Loading...</span>
                                 </div>
-                                <button id="inverse-gauss-button" class="btn btn-primary btn-sm" onclick="inverseGauss();">Oblicz metodą Gaussa-Jordana</button>
-                                <button id="inverse-numpy-button" class="btn btn-primary btn-sm" onclick="inverseNumPy();">Oblicz biblioteką NumPy</button>
-                                <button id="clear-button" class="btn btn-primary btn-sm" onclick="clearPanel();">Wyczyść</button>
+                                <button id="inverse-gauss-button" class="btn btn-primary btn-sm m-1" onclick="inverseGauss();">Oblicz metodą Gaussa-Jordana</button>
+                                <button id="inverse-numpy-button" class="btn btn-primary btn-sm m-1" onclick="inverseNumPy();">Oblicz biblioteką NumPy</button>
+                                <button id="clear-button" class="btn btn-primary btn-sm m-1" onclick="clearPanel();">Wyczyść</button>
                             </div>
                         </div>
                         <span id="order-error" class="error text-danger"></span>
