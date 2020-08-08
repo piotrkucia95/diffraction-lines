@@ -26,3 +26,18 @@
 .echelon-matrix tr:last-child td:last-child {
     border-bottom: 1px solid black;
 }
+
+.dropdown-content {
+    width: 100%;
+    padding: 0px;
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: white;
+    list-style-type: none;
+}
+
+.dropdown-item:hover {
+    cursor: pointer;
+}

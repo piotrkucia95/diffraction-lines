@@ -50,7 +50,7 @@ class Math:
         end_time = time.time()
         return (inverse, (end_time - start_time))
 
-    def calculate_intensities(self, d_a, d_b, n_a, m_b, n):
+    def calculate_intensities(self, d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale):
         start_time = time.time()
 
         l = n_a * d_a + d_b * m_b
@@ -64,7 +64,7 @@ class Math:
         lambda_length = 1
 
         intensities = []
-        for _2_theta in range(0, 18001):
+        for _2_theta in range(theta_2_min * 100, (theta_2_max * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
             cos_2_theta = math.cos(rad_2_theta)

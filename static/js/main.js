@@ -1,4 +1,6 @@
 var chart;
+var dA;
+var dB;
 
 var inverseGauss = function() {
     var order = jQuery('#order-input').val();
@@ -28,17 +30,50 @@ var handleInverseResponse = function(results, order) {
     displayInverseResults(results, order);
 }
 
+var handleSearch = function(event) {
+    if (event.target.value.length > 1) {
+        displaySearchResults(JSON.parse('{}'), event.target.id);
+        jQuery.ajax({url: '/elements?searchTerm=' + encodeURIComponent(event.target.value), type: 'get'})
+        .done((data) => {
+            displaySearchResults(data, event.target.id);
+        })
+        .fail((error) => {
+            console.log(error);
+        })
+    } else {
+        hideSearchResults(event.target.id);
+    }
+}
+
+var handleSearchResultsClick = function(event) {
+    jQuery('#' + event.currentTarget.dataset.parent).val(event.currentTarget.textContent);
+    switch(event.currentTarget.dataset.parent) {
+        case 'element-a-search':
+            dA = event.currentTarget.dataset.value
+            break;
+        case 'element-b-search':
+            dB = event.currentTarget.dataset.value
+    }
+    hideSearchResults(event.currentTarget.dataset.parent);
+}
+
 var getIntensities = function() {
-    var dA = jQuery('#da-input').val();
-    var dB = jQuery('#db-input').val();
+    // var dA = jQuery('#da-input').val();
+    // var dB = jQuery('#db-input').val();
     var nA = jQuery('#na-input').val();
     var mB = jQuery('#mb-input').val();
     var n = jQuery('#n-input').val();
+    var theta2Min = +jQuery('#2-theta-min').val() || 0;
+    var theta2Max = +jQuery('#2-theta-max').val() || 180;
+    var yScale = jQuery('#y-scale-input').val();
     if (!dA || !dB || !nA || !mB || !n) {
         jQuery('#diffraction-error').removeClass('d-none');
+    } else if (theta2Min >= theta2Max || theta2Min < 0 || theta2Max > 180) {
+        jQuery('#theta-range-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
-        sendIntensitiesRequest('?dA=' + dA + '&dB=' + dB + '&nA=' + nA + '&mB=' + mB + '&N=' + n);
+        jQuery('#theta-range-error').addClass('d-none');
+        sendIntensitiesRequest('?dA=' + dA + '&dB=' + dB + '&nA=' + nA + '&mB=' + mB + '&N=' + n + '&2ThetaMin=' + theta2Min + '&2ThetaMax=' + theta2Max + '&yScale=' + yScale);
     }
 }
 

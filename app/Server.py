@@ -1,6 +1,10 @@
 from Math import Math
 from flask import Flask, jsonify, request
 import os
+import json 
+
+with open('app/data/interplanar-distances.json', encoding='utf-8') as f:
+    interplanar_distances = json.load(f)
 
 class Server:
     def __init__(self):  
@@ -40,11 +44,23 @@ class Server:
             n_a = int(request.args.get('nA'))
             m_b = int(request.args.get('mB'))
             n = int(request.args.get('N'))
-            intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, m_b, n)
+            theta_2_min = int(request.args.get('2ThetaMin'))
+            theta_2_max = int(request.args.get('2ThetaMax'))
+            y_scale = int(request.args.get('yScale'))
+            intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale)
             return jsonify(
                 intensities=intensities_tuple[0],
                 time=intensities_tuple[1]
             )
+
+        @self.app.route('/elements')
+        def get_element():
+            search_term = request.args.get('searchTerm').lower()
+            result = {}
+            for key in interplanar_distances.keys():
+                if search_term in key.lower():
+                    result[key] = interplanar_distances[key]
+            return jsonify(result)
     
     def run_server(self):
         self.app.run(host='0.0.0.0', port=self.port)

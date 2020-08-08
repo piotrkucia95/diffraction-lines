@@ -1,3 +1,5 @@
+var searchBlurActive = true;
+
 var initInverseRequest = function() {
     clearPanel();
     jQuery('#inverse-spinner').removeClass('d-none');
@@ -29,4 +31,50 @@ var clearPanel = function() {
 var clearChart = function() {
     updateChartData([]);
     jQuery('#diffraction-time').remove();
+}
+
+var displaySearchResults = function(elements, elementId) {
+    var element;
+    var dropdownItemsHTML = generateDropdownItemsHTML(elements, elementId);
+    switch(elementId) {
+        case 'element-a-search':
+            element = jQuery('#a-search-results');
+            break;
+        case 'element-b-search':
+            element = jQuery('#b-search-results');
+    }
+    element.removeClass('d-none');
+    element.html(dropdownItemsHTML);
+}
+
+var generateDropdownItemsHTML = function(elements, elementId) {
+    var dropdownItemsHTML = '';
+    Object.keys(elements).forEach(key => {
+        dropdownItemsHTML += '<li class="dropdown-item" data-value="' + elements[key] + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + key + '</li>';
+    });
+    return dropdownItemsHTML;
+}
+
+var hideSearchResults = function(elementId) {
+    switch(elementId) {
+        case 'element-a-search':
+            jQuery('#a-search-results').addClass('d-none');
+            break;
+        case 'element-b-search':
+            jQuery('#b-search-results').addClass('d-none');
+    }
+}
+
+var handleSearchBlur = function(event) {
+    if (searchBlurActive) {
+        hideSearchResults(event.target.id);
+    }
+}
+
+var handleSearchResultsMouseDown = function(event) {
+    searchBlurActive = false;
+}
+
+var handleSearchResultsMouseUp = function(event) {
+    searchBlurActive = true;
 }
