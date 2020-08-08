@@ -1,9 +1,9 @@
-from Math import Math
+from calc import Math
 from flask import Flask, jsonify, request
 import os
 import json 
 
-with open('app/data/interplanar-distances.json', encoding='utf-8') as f:
+with open('data/interplanar-distances.json', encoding='utf-8') as f:
     interplanar_distances = json.load(f)
 
 class Server:
