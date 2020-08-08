@@ -4,7 +4,7 @@ import os
 
 class Server:
     def __init__(self):  
-        self.app = Flask(__name__, static_url_path='')
+        self.app = Flask(__name__, static_url_path='', static_folder='../static')
         self.port = int(os.environ.get("PORT", 5000))
         self.math = Math()
         self.set_routes()
