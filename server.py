@@ -8,7 +8,7 @@ with open('data/interplanar-distances.json', encoding='utf-8') as f:
 
 class Server:
     def __init__(self):  
-        self.app = Flask(__name__, static_url_path='', static_folder='../static')
+        self.app = Flask(__name__, static_url_path='')
         self.port = int(os.environ.get("PORT", 8000))
         self.math = Math()
         self.set_routes()
