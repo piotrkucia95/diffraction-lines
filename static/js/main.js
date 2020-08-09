@@ -65,7 +65,7 @@ var getIntensities = function() {
     var n = jQuery('#n-input').val();
     var theta2Min = +jQuery('#2-theta-min').val() || 0;
     var theta2Max = +jQuery('#2-theta-max').val() || 180;
-    var yScale = jQuery('#y-scale-input').val();
+    var yScale = +jQuery('#y-scale-input').val() || 0;
     if (!dA || !dB || !nA || !mB || !n) {
         jQuery('#diffraction-error').removeClass('d-none');
     } else if (theta2Min >= theta2Max || theta2Min < 0 || theta2Max > 180) {
