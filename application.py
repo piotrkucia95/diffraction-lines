@@ -13,7 +13,8 @@ math = Math()
 
 @app.route('/')
 def index():
-    return app.send_static_file('index.html')
+    return "Hello World!"
+    # return app.send_static_file('index.html')
 
 @app.route('/matrix-inverse/gauss/<order>')
 def matrix_inverse_gauss(order):
