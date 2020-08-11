@@ -59,12 +59,11 @@ class Math:
         w_b = 0
         g_a = 1
         g_b = 1
-        i = 1
         pi = 3.14
-        lambda_length = 1
+        lambda_length = 1.54 # angstrem
 
         intensities = []
-        for _2_theta in range(theta_2_min * 100, (theta_2_max * 100) + 1):
+        for _2_theta in range(int(theta_2_min * 100), int(theta_2_max * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
             cos_2_theta = math.cos(rad_2_theta)
@@ -74,17 +73,22 @@ class Math:
 
             s = sin_theta / lambda_length
 
+            # TODO: xjA i xjB zawrzeć w jednej zmiennej, zwiększanej w pojedynczej pętli - zarówno sum_a i sum_b powinny być obliczane w jednej pętli
+            
+            # TODO: sprawdzić obliczenia na liczbach zespolonych z obliczeniami na wyprowadzonych z nich liczbach rzeczywistych
+
             sum_a = 0
             for x_ai in range(1, n_a*n + 1):
-                sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(i * pi * x_ai * s))
-                # sum_a += np.exp(i * pi * x_ai * s)
+                sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * x_ai * s)))
+                # sum_a += np.exp(complex(0, 4 * pi * x_ai * s))
 
             sum_b = 0
             for x_bi in range(1, m_b*n + 1):
-                sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(i * pi * x_bi * s))
-                # sum_b = np.exp(i * pi * x_bi * s)
+                sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * x_bi * s)))
+                # sum_b += np.exp(complex(0, 4 * pi * x_bi * s))
 
-            intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow((sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
+            intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
+            # intensity = math.pow(abs(sum_a + sum_b), 2)
             intensities.append([_2_theta/100, intensity])
 
         end_time = time.time()
