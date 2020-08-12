@@ -78,14 +78,25 @@ class Math:
             # TODO: sprawdzić obliczenia na liczbach zespolonych z obliczeniami na wyprowadzonych z nich liczbach rzeczywistych
 
             sum_a = 0
-            for x_ai in range(1, n_a*n + 1):
-                sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * x_ai * s)))
-                # sum_a += np.exp(complex(0, 4 * pi * x_ai * s))
-
             sum_b = 0
-            for x_bi in range(1, m_b*n + 1):
-                sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * x_bi * s)))
-                # sum_b += np.exp(complex(0, 4 * pi * x_bi * s))
+            planes_per_d_a = 3
+            planes_per_d_b = 3
+            distance = 0
+            while distance < n * (n_a + m_b):
+                xj = 0
+                while xj < n_a:
+                    # xj += d_a
+                    xj += (d_a / planes_per_d_a)
+                    # sum_a += np.exp(complex(0, 4 * pi * x_ai * s))
+                    sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * (xj + distance) * s)))
+
+                while xj < n_a + m_b:
+                    # xj += d_b
+                    xj += (d_b / planes_per_d_b)
+                    # sum_b += np.exp(complex(0, 4 * pi * x_bi * s))
+                    sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * (xj + distance) * s)))
+
+                distance += xj
 
             intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
             # intensity = math.pow(abs(sum_a + sum_b), 2)
