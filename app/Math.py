@@ -72,34 +72,22 @@ class Math:
             sin_theta = math.sin(rad_theta)
 
             s = sin_theta / lambda_length
-
-            # TODO: xjA i xjB zawrzeć w jednej zmiennej, zwiększanej w pojedynczej pętli - zarówno sum_a i sum_b powinny być obliczane w jednej pętli
             
-            # TODO: sprawdzić obliczenia na liczbach zespolonych z obliczeniami na wyprowadzonych z nich liczbach rzeczywistych
-
             sum_a = 0
             sum_b = 0
-            planes_per_d_a = 3
-            planes_per_d_b = 3
-            distance = 0
-            while distance < n * (n_a + m_b):
-                xj = 0
-                while xj < n_a:
-                    # xj += d_a
-                    xj += (d_a / planes_per_d_a)
-                    # sum_a += np.exp(complex(0, 4 * pi * x_ai * s))
-                    sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * (xj + distance) * s)))
+            for i in range(n):
+                for j in range(n_a):
+                    xj_a = i * (n_a*d_a + m_b*d_b) + d_a * j
+                    # sum_a += np.exp(complex(0, 4 * pi * xj_a * s))
+                    sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * xj_a * s)))
 
-                while xj < n_a + m_b:
-                    # xj += d_b
-                    xj += (d_b / planes_per_d_b)
-                    # sum_b += np.exp(complex(0, 4 * pi * x_bi * s))
-                    sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * (xj + distance) * s)))
+                for j in range(m_b):
+                    xj_b = i * (n_a*d_a + m_b*d_b) + (n_a * d_a) + (d_b * j)
+                    # sum_a += np.exp(complex(0, 4 * pi * xj_b * s))
+                    sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * xj_b * s)))
 
-                distance += xj
-
-            intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
             # intensity = math.pow(abs(sum_a + sum_b), 2)
+            intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
             intensities.append([_2_theta/100, intensity])
 
         end_time = time.time()
