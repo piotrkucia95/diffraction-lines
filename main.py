@@ -2,22 +2,23 @@ import numpy as np
 import time 
 import sys
 
-def inverse_numpy(order, array):
+def inverse_numpy(matrix):
     start_time = time.time()
 
-    matrix = np.array(array)
-    inverse = np.linalg.inv(matrix)
+    array = np.array(matrix)
+    inverse = np.linalg.inv(array)
 
     end_time = time.time()
 
     print('Czas obliczeń:', str(end_time - start_time), 's.')
 
-    if order < 11:
+    if len(matrix) < 11:
         print("Macierz odwrotna:")
         print(inverse)
 
 
-def inverse_gauss(order, matrix):
+def inverse_gauss(matrix):
+    order = len(matrix)
     range_order = range(order)
     range_2_order = range(2*order)
     range_order_2_order = range(order, 2*order)
@@ -65,11 +66,11 @@ if order < 11:
 
 if len(sys.argv) == 1 or sys.argv[1] == 'numpy':
     print('Obliczanie macierzy odwrotnej z wykorzystaniem biblioteki NumPy...', '\n')
-    inverse_numpy(order, array)
+    inverse_numpy(array)
     print()
 
 if len(sys.argv) == 1 or sys.argv[1] == 'gauss':
     array = [[(order + 1 if x == y else 1) for x in range(order)] for y in range(order)]
     print('Obliczanie macierzy odwrotnej z wykorzystaniem eliminacji Gaussa...', '\n')
-    inverse_gauss(order, array)
+    inverse_gauss(array)
     print()
