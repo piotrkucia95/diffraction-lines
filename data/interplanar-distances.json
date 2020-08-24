@@ -1,4 +1,23 @@
 {
-    "Żelazo α": 1,
-    "Glin / Aluminium": 2
+    "Żelazo - Fe α": {
+        "d": 2
+    },
+    "Żelazo - Fe β": {
+        "d": 2.5
+    },
+    "Glin (Aluminium) - Al": {
+        "d": 3
+    },
+    "Bizmut - Bi": {
+        "d": 3.2797
+    },
+    "Antymon - Sb": {
+        "d": 3.1106
+    },
+    "Ołów - Pb": {
+        "d": 2.858
+    },
+    "Srebro - Ag": {
+        "d": 2.357
+    }
 }

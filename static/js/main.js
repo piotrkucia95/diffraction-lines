@@ -1,4 +1,5 @@
 var chart;
+var slider;
 var dA;
 var dB;
 
@@ -58,18 +59,15 @@ var handleSearchResultsClick = function(event) {
 }
 
 var getIntensities = function() {
-    // var dA = jQuery('#da-input').val();
-    // var dB = jQuery('#db-input').val();
     var nA = jQuery('#na-input').val();
     var mB = jQuery('#mb-input').val();
     var n = jQuery('#n-input').val();
-    var theta2Min = +jQuery('#2-theta-min').val() || 0;
-    var theta2Max = +jQuery('#2-theta-max').val() || 180;
+    var theta2Range = slider.noUiSlider.get();
+    var theta2Min = +theta2Range[0];
+    var theta2Max = +theta2Range[1];
     var yScale = +jQuery('#y-scale-input').val() || 0;
     if (!dA || !dB || !nA || !mB || !n) {
         jQuery('#diffraction-error').removeClass('d-none');
-    } else if (theta2Min >= theta2Max || theta2Min < 0 || theta2Max > 180) {
-        jQuery('#theta-range-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
         jQuery('#theta-range-error').addClass('d-none');
@@ -86,6 +84,8 @@ var sendIntensitiesRequest = function(queryString) {
         createChart(data.intensities);
         timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
         jQuery('#diffraction-results').append(timeMessage);
+        jQuery('#y-scale-increase').removeAttr("disabled");
+        jQuery('#y-scale-decrease').removeAttr("disabled");
     })
     .fail((error) => {
         console.log(error);
@@ -134,4 +134,5 @@ var createChart = function(intensities) {
 
 window.onload = function () {
     createChart([]);
+    createSlider();
 }
