@@ -33,7 +33,7 @@ def matrix_inverse_numpy(order):
         time=inverse_tuple[1]
     )
 
-@self.app.route('/diffraction-intensities')
+@app.route('/diffraction-intensities')
 def calculate_intensities():
     d_a = float(request.args.get('dA'))
     d_b = float(request.args.get('dB'))
