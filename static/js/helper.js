@@ -31,6 +31,8 @@ var clearPanel = function() {
 var clearChart = function() {
     updateChartData([]);
     jQuery('#diffraction-time').remove();
+    jQuery('#y-scale-increase').prop("disabled", true);
+    jQuery('#y-scale-decrease').prop("disabled", true);
 }
 
 var displaySearchResults = function(elements, elementId) {
@@ -50,7 +52,7 @@ var displaySearchResults = function(elements, elementId) {
 var generateDropdownItemsHTML = function(elements, elementId) {
     var dropdownItemsHTML = '';
     Object.keys(elements).forEach(key => {
-        dropdownItemsHTML += '<li class="dropdown-item" data-value="' + elements[key] + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + key + '</li>';
+        dropdownItemsHTML += '<li class="dropdown-item" data-value="' + elements[key].d + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + key + '</li>';
     });
     return dropdownItemsHTML;
 }
@@ -77,4 +79,42 @@ var handleSearchResultsMouseDown = function(event) {
 
 var handleSearchResultsMouseUp = function(event) {
     searchBlurActive = true;
+}
+
+var showTooltip = function(event) {
+    $('#' + event.currentTarget.id).popover('show');
+}
+
+var hideTooltip = function(event) {
+    $('#' + event.currentTarget.id).popover('hide');
+}
+
+var createSlider = function() {
+    slider = document.getElementById('2-theta-slider');
+
+    noUiSlider.create(slider, {
+        range: {
+            'min': 0,
+            'max': 180
+        },
+        start: [20, 160],
+        tooltips: true,
+        keyboardPageMultiplier: 100, // Default 5
+        keyboardDefaultStep: 18000, // Default 10
+        connect: true,
+    });
+}
+
+var increaseYScale = function() {
+    for (let i=0; i < chart.options.data[0].dataPoints.length; i++) {
+        chart.options.data[0].dataPoints[i].y *= 10;
+    }
+    chart.render();
+}
+
+var decreaseYScale = function() {
+    for (let i=0; i < chart.options.data[0].dataPoints.length; i++) {
+        chart.options.data[0].dataPoints[i].y /= 10;
+    }
+    chart.render();
 }
