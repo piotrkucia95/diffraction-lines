@@ -43,7 +43,7 @@ def calculate_intensities():
     theta_2_min = round(float(request.args.get('2ThetaMin')), 2)
     theta_2_max = round(float(request.args.get('2ThetaMax')), 2)
     y_scale = int(request.args.get('yScale'))
-    intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale)
+    intensities_tuple = math.calculate_intensities(d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale)
     return jsonify(
         intensities=intensities_tuple[0],
         time=intensities_tuple[1]
