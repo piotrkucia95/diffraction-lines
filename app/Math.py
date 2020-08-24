@@ -50,11 +50,11 @@ class Math:
         end_time = time.time()
         return (inverse, (end_time - start_time))
 
-    def calculate_intensities(self, d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale):
+    def calculate_intensities(self, params):
         start_time = time.time()
 
-        l = n_a * d_a + d_b * m_b
-        w = n * l
+        l = params['n_a'] * params['d_a'] + params['d_b'] * params['m_b']
+        w = params['n'] * l
         w_a = 0
         w_b = 0
         g_a = 1
@@ -63,7 +63,7 @@ class Math:
         lambda_length = 1.54 # angstrem
 
         intensities = []
-        for _2_theta in range(int(theta_2_min * 100), int(theta_2_max * 100) + 1):
+        for _2_theta in range(int(params['theta_2_min'] * 100), int(params['theta_2_max'] * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
             cos_2_theta = math.cos(rad_2_theta)
@@ -75,14 +75,14 @@ class Math:
             
             sum_a = 0
             sum_b = 0
-            for i in range(n):
-                for j in range(n_a):
-                    xj_a = i * (n_a*d_a + m_b*d_b) + d_a * j
+            for i in range(params['n']):
+                for j in range(params['n_a']):
+                    xj_a = i * (params['n_a'] * params['d_a'] + params['m_b'] * params['d_b']) + params['d_a'] * j
                     # sum_a += np.exp(complex(0, 4 * pi * xj_a * s))
                     sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * xj_a * s)))
 
-                for j in range(m_b):
-                    xj_b = i * (n_a*d_a + m_b*d_b) + (n_a * d_a) + (d_b * j)
+                for j in range(params['m_b']):
+                    xj_b = i * (params['n_a'] * params['d_a'] + params['m_b'] * params['d_b']) + (params['n_a'] * params['d_a']) + (params['d_b'] * j)
                     # sum_a += np.exp(complex(0, 4 * pi * xj_b * s))
                     sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * xj_b * s)))
 

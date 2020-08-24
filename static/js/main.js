@@ -2,6 +2,8 @@ var chart;
 var slider;
 var dA;
 var dB;
+var elementAId;
+var elementBId;
 
 var inverseGauss = function() {
     var order = jQuery('#order-input').val();
@@ -33,8 +35,7 @@ var handleInverseResponse = function(results, order) {
 
 var handleSearch = function(event) {
     if (event.target.value.length > 1) {
-        displaySearchResults(JSON.parse('{}'), event.target.id);
-        jQuery.ajax({url: '/elements?searchTerm=' + encodeURIComponent(event.target.value), type: 'get'})
+        jQuery.ajax({url: '/elements?searchTerm=' + encodeURIComponent(event.target.value.split(' ')[0]), type: 'get'})
         .done((data) => {
             displaySearchResults(data, event.target.id);
         })
@@ -50,10 +51,12 @@ var handleSearchResultsClick = function(event) {
     jQuery('#' + event.currentTarget.dataset.parent).val(event.currentTarget.textContent);
     switch(event.currentTarget.dataset.parent) {
         case 'element-a-search':
-            dA = event.currentTarget.dataset.value
+            dA = event.currentTarget.dataset.dhkl;
+            elementAId = event.currentTarget.dataset.element;
             break;
         case 'element-b-search':
-            dB = event.currentTarget.dataset.value
+            dB = event.currentTarget.dataset.dhkl;
+            elementBId = event.currentTarget.dataset.element;
     }
     hideSearchResults(event.currentTarget.dataset.parent);
 }
@@ -63,24 +66,35 @@ var getIntensities = function() {
     var mB = jQuery('#mb-input').val();
     var n = jQuery('#n-input').val();
     var theta2Range = slider.noUiSlider.get();
-    var theta2Min = +theta2Range[0];
-    var theta2Max = +theta2Range[1];
-    var yScale = +jQuery('#y-scale-input').val() || 0;
     if (!dA || !dB || !nA || !mB || !n) {
         jQuery('#diffraction-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
         jQuery('#theta-range-error').addClass('d-none');
-        sendIntensitiesRequest('?dA=' + dA + '&dB=' + dB + '&nA=' + nA + '&mB=' + mB + '&N=' + n + '&2ThetaMin=' + theta2Min + '&2ThetaMax=' + theta2Max + '&yScale=' + yScale);
+        sendIntensitiesRequest({
+            element_a_id : elementAId,
+            element_b_id : elementBId,
+            d_a          : +dA,
+            d_b          : +dB,
+            n_a          : +nA,
+            m_b          : +mB,
+            n            : +n,
+            theta_2_min  : +theta2Range[0],
+            theta_2_max  : +theta2Range[1]
+        });
     }
 }
 
-var sendIntensitiesRequest = function(queryString) {
+var sendIntensitiesRequest = function(requestData) {
     clearChart();
     jQuery('#diffraction-spinner').removeClass('d-none');
-    jQuery.ajax({url: '/diffraction-intensities' + queryString, type: 'get'})
+    jQuery.ajax({
+        url: '/diffraction-intensities', 
+        type: 'post', 
+        data: JSON.stringify(requestData), 
+        contentType : 'application/json'
+    })
     .done((data) => {
-        console.log(data);
         createChart(data.intensities);
         timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
         jQuery('#diffraction-results').append(timeMessage);

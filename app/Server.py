@@ -1,18 +1,16 @@
 from Math import Math
+from Database import Database
 from flask import Flask, jsonify, request
 import os
-import json 
-
-with open('app/data/interplanar-distances.json', encoding='utf-8') as f:
-    interplanar_distances = json.load(f)
 
 class Server:
     def __init__(self):  
         self.app = Flask(__name__, static_url_path='', static_folder='../static')
         self.port = int(os.environ.get("PORT", 5000))
         self.math = Math()
-        self.set_routes()
-        self.run_server()   
+        self.db = Database()
+        self.set_routes() 
+        self.run_server()
            
     def set_routes(self):
         @self.app.route('/')
@@ -37,17 +35,10 @@ class Server:
                 time=inverse_tuple[1]
             )
 
-        @self.app.route('/diffraction-intensities')
+        @self.app.route('/diffraction-intensities', methods=['POST'])
         def calculate_intensities():
-            d_a = float(request.args.get('dA'))
-            d_b = float(request.args.get('dB'))
-            n_a = int(request.args.get('nA'))
-            m_b = int(request.args.get('mB'))
-            n = int(request.args.get('N'))
-            theta_2_min = round(float(request.args.get('2ThetaMin')), 2)
-            theta_2_max = round(float(request.args.get('2ThetaMax')), 2)
-            y_scale = int(request.args.get('yScale'))
-            intensities_tuple = self.math.calculate_intensities(d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale)
+            params = request.get_json()
+            intensities_tuple = self.math.calculate_intensities(params)
             return jsonify(
                 intensities=intensities_tuple[0],
                 time=intensities_tuple[1]
@@ -55,12 +46,16 @@ class Server:
 
         @self.app.route('/elements')
         def get_element():
-            search_term = request.args.get('searchTerm').lower()
-            result = {}
-            for key in interplanar_distances.keys():
-                if search_term in key.lower():
-                    result[key] = interplanar_distances[key]
-            return jsonify(result)
+            search_term = request.args.get('searchTerm')
+            results = self.db.search_elements(search_term)
+            elements = []
+            for result in results:
+                elements.append({
+                    "id"          : result[4],
+                    "displayName" : result[3],
+                    "dhkl"        : result[2]
+                })
+            return jsonify(elements)
     
     def run_server(self):
         self.app.run(host='0.0.0.0', port=self.port)

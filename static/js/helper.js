@@ -51,8 +51,8 @@ var displaySearchResults = function(elements, elementId) {
 
 var generateDropdownItemsHTML = function(elements, elementId) {
     var dropdownItemsHTML = '';
-    Object.keys(elements).forEach(key => {
-        dropdownItemsHTML += '<li class="dropdown-item" data-value="' + elements[key].d + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + key + '</li>';
+    elements.forEach(element => {
+        dropdownItemsHTML += '<li class="dropdown-item" data-dhkl="' + element.dhkl + '" data-element="' + element.id + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + element.displayName + '</li>';
     });
     return dropdownItemsHTML;
 }
