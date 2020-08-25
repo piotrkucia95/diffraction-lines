@@ -79,6 +79,10 @@ var getIntensities = function() {
             n_a          : +nA,
             m_b          : +mB,
             n            : +n,
+            w_a          : +jQuery('#wa-input').val() || 0,
+            w_b          : +jQuery('#wb-input').val() || 0,
+            g_a          : +jQuery('#ga-input').val() || 1,
+            g_b          : +jQuery('#gb-input').val() || 1,
             theta_2_min  : +theta2Range[0],
             theta_2_max  : +theta2Range[1]
         });
@@ -109,6 +113,37 @@ var sendIntensitiesRequest = function(requestData) {
     });
 }
 
+var getCalculations = function() {
+    jQuery('#history').html('');
+    jQuery.ajax({ url: '/calculations', type: 'get' })
+    .done((data) => {
+        $('#history').DataTable( {
+            data: data,
+            columns: [
+                { title: "Pierwiastek A" },
+                { title: "Pierwiastek B" },
+                { title: "nA" },
+                { title: "mB" },
+                { title: "N" },
+                { title: "WA" },
+                { title: "WB" },
+                { title: "gA" },
+                { title: "gB" },
+                { title: "Zakres kąta 2θ" },
+                { title: "Zakres kąta 2θ" },
+                { title: "Standard" },
+                { title: "Data utworzenia" }
+            ]
+        } );
+    })
+    .fail((error) => {
+        console.log(error);
+    })
+    .always(() => {
+        jQuery('#diffraction-spinner').addClass('d-none');
+    });
+}
+
 var updateChartData = function(intensities) {
     chart.options.data[0].dataPoints = createDataPoints(intensities);
     chart.render();
@@ -126,12 +161,18 @@ var createDataPoints = function(intensities) {
 }
 
 var createChart = function(intensities) {
+    CanvasJS.addCultureInfo("pl", {
+        savePNGText : "Pobierz PNG",
+        saveJPGText : "Pobierz JPG",
+        printText   : "Drukuj"
+    });
     chart = new CanvasJS.Chart("chartContainer", {
         exportEnabled: true,
 	    animationEnabled: true,    
         title:{
             text: "Natężenie linii dyfrakcyjnych w zależności od kąta 2θ"              
         },
+        culture: "pl",
         axisX: {
             title: "Kąt dyfrakcji 2θ [deg]"
         },

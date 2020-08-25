@@ -53,16 +53,10 @@ class Math:
     def calculate_intensities(self, params):
         start_time = time.time()
 
-        l = params['n_a'] * params['d_a'] + params['d_b'] * params['m_b']
-        w = params['n'] * l
-        w_a = 0
-        w_b = 0
-        g_a = 1
-        g_b = 1
-        pi = 3.14
         lambda_length = 1.54 # angstrem
-
+        pi = 3.14
         intensities = []
+        
         for _2_theta in range(int(params['theta_2_min'] * 100), int(params['theta_2_max'] * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
@@ -79,12 +73,12 @@ class Math:
                 for j in range(params['n_a']):
                     xj_a = i * (params['n_a'] * params['d_a'] + params['m_b'] * params['d_b']) + params['d_a'] * j
                     # sum_a += np.exp(complex(0, 4 * pi * xj_a * s))
-                    sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * xj_a * s)))
+                    sum_a += (np.exp(-params['w_a'] * math.pow(s, 2)) * params['g_a'] * np.exp(complex(0, 4 * pi * xj_a * s)))
 
                 for j in range(params['m_b']):
                     xj_b = i * (params['n_a'] * params['d_a'] + params['m_b'] * params['d_b']) + (params['n_a'] * params['d_a']) + (params['d_b'] * j)
                     # sum_a += np.exp(complex(0, 4 * pi * xj_b * s))
-                    sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * xj_b * s)))
+                    sum_b += (np.exp(-params['w_b'] * math.pow(s, 2)) * params['g_b'] * np.exp(complex(0, 4 * pi * xj_b * s)))
 
             # intensity = math.pow(abs(sum_a + sum_b), 2)
             intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0

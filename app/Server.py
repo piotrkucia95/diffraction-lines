@@ -35,15 +35,6 @@ class Server:
                 time=inverse_tuple[1]
             )
 
-        @self.app.route('/diffraction-intensities', methods=['POST'])
-        def calculate_intensities():
-            params = request.get_json()
-            intensities_tuple = self.math.calculate_intensities(params)
-            return jsonify(
-                intensities=intensities_tuple[0],
-                time=intensities_tuple[1]
-            )
-
         @self.app.route('/elements')
         def get_element():
             search_term = request.args.get('searchTerm')
@@ -56,6 +47,20 @@ class Server:
                     "dhkl"        : result[2]
                 })
             return jsonify(elements)
+
+        @self.app.route('/diffraction-intensities', methods=['POST'])
+        def calculate_intensities():
+            params = request.get_json()
+            intensities_tuple = self.math.calculate_intensities(params)
+            self.db.save_calculations(params)
+            return jsonify(
+                intensities=intensities_tuple[0],
+                time=intensities_tuple[1]
+            )
+
+        @self.app.route('/calculations', methods=['GET'])
+        def get_calculations():
+            return jsonify(self.db.get_calculations()) 
     
     def run_server(self):
         self.app.run(host='0.0.0.0', port=self.port)

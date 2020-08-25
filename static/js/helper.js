@@ -97,7 +97,7 @@ var createSlider = function() {
             'min': 0,
             'max': 180
         },
-        start: [20, 160],
+        start: [20, 90],
         tooltips: true,
         keyboardPageMultiplier: 100, // Default 5
         keyboardDefaultStep: 18000, // Default 10
