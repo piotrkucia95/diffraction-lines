@@ -28,6 +28,33 @@ var clearPanel = function() {
     jQuery('#inverse-time').remove();
 }
 
+var createChart = function(intensities) {
+    CanvasJS.addCultureInfo("pl", {
+        savePNGText : "Pobierz PNG",
+        saveJPGText : "Pobierz JPG",
+        printText   : "Drukuj"
+    });
+    chart = new CanvasJS.Chart("chartContainer", {
+        exportEnabled: true,
+	    animationEnabled: true,    
+        title:{
+            text: "Natężenie linii dyfrakcyjnych w zależności od kąta 2θ"              
+        },
+        culture: "pl",
+        axisX: {
+            title: "Kąt dyfrakcji 2θ [deg]"
+        },
+        axisY: {
+            title: "Intensywność promieniowania"
+        },
+        data: [{
+            type: 'splineArea',
+            dataPoints: []
+        }]
+    });
+    updateChartData(intensities);
+}
+
 var clearChart = function() {
     updateChartData([]);
     jQuery('#diffraction-time').remove();
@@ -117,4 +144,40 @@ var decreaseYScale = function() {
         chart.options.data[0].dataPoints[i].y /= 10;
     }
     chart.render();
+}
+
+var createDataTable = function(data) {
+    $('#history').DataTable({
+        data: data,
+        columns: [
+            { title: "Pierwiastek A" },
+            { title: "Pierwiastek B" },
+            { title: "n<sub>A</sub>" },
+            { title: "m<sub>B</sub>" },
+            { title: "N" },
+            { title: "W<sub>A</sub>" },
+            { title: "W<sub>B</sub>" },
+            { title: "g<sub>A</sub>" },
+            { title: "g<sub>B</sub>" },
+            { title: "Zakres kąta 2θ" },
+            { title: "Data" }
+        ], 
+        language: {
+            "emptyTable": "Nie znaleziono wyników",
+            "lengthMenu": "Pokaż _MENU_ ostatnich obliczeń",
+            "info"      : "_START_ do _END_ z _TOTAL_ wszystkich wyników",
+            "infoEmpty":  "Brak wyników",
+            "search"    : "Szukaj:",
+            "paginate"  : {
+                "first"    : "Pierwsza",
+                "last"     : "Ostatnia",
+                "next"     : "Następna",
+                "previous" : "Poprzednia"
+            },
+        }
+    });
+}
+
+var destroyDataTable = function() {
+    $('#history').DataTable().destroy();
 }

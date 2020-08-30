@@ -1,5 +1,6 @@
 var chart;
 var slider;
+var dataTable;
 var dA;
 var dB;
 var elementAId;
@@ -72,19 +73,19 @@ var getIntensities = function() {
         jQuery('#diffraction-error').addClass('d-none');
         jQuery('#theta-range-error').addClass('d-none');
         sendIntensitiesRequest({
-            element_a_id : elementAId,
-            element_b_id : elementBId,
-            d_a          : +dA,
-            d_b          : +dB,
-            n_a          : +nA,
-            m_b          : +mB,
-            n            : +n,
-            w_a          : +jQuery('#wa-input').val() || 0,
-            w_b          : +jQuery('#wb-input').val() || 0,
-            g_a          : +jQuery('#ga-input').val() || 1,
-            g_b          : +jQuery('#gb-input').val() || 1,
-            theta_2_min  : +theta2Range[0],
-            theta_2_max  : +theta2Range[1]
+            elementAId : elementAId,
+            elementBId : elementBId,
+            dA         : +dA,
+            dB         : +dB,
+            nA         : +nA,
+            mB         : +mB,
+            n          : +n,
+            wA         : +jQuery('#wa-input').val() || 0,
+            wB         : +jQuery('#wb-input').val() || 0,
+            gA         : +jQuery('#ga-input').val() || 1,
+            gB         : +jQuery('#gb-input').val() || 1,
+            theta2Min  : +theta2Range[0],
+            theta2Max  : +theta2Range[1]
         });
     }
 }
@@ -117,24 +118,19 @@ var getCalculations = function() {
     jQuery('#history').html('');
     jQuery.ajax({ url: '/calculations', type: 'get' })
     .done((data) => {
-        $('#history').DataTable( {
-            data: data,
-            columns: [
-                { title: "Pierwiastek A" },
-                { title: "Pierwiastek B" },
-                { title: "nA" },
-                { title: "mB" },
-                { title: "N" },
-                { title: "WA" },
-                { title: "WB" },
-                { title: "gA" },
-                { title: "gB" },
-                { title: "Zakres kąta 2θ" },
-                { title: "Zakres kąta 2θ" },
-                { title: "Standard" },
-                { title: "Data utworzenia" }
-            ]
-        } );
+        displayedData = [];
+        data.forEach(calc => {
+            var row = [
+                calc.elementA.name, calc.elementB.name, calc.nA, 
+                calc.mB, calc.n, calc.wA, calc.wB, calc.gA, calc.gB, 
+                calc.theta2Min + '&deg; - ' + calc.theta2Max + '&deg;',  
+                new Date(calc.createdDate).toLocaleDateString()
+            ];
+            displayedData.push(row);
+            dataTableData = displayedData;
+        });
+        destroyDataTable();
+        createDataTable(displayedData);
     })
     .fail((error) => {
         console.log(error);
@@ -160,34 +156,8 @@ var createDataPoints = function(intensities) {
     return dataPoints;
 }
 
-var createChart = function(intensities) {
-    CanvasJS.addCultureInfo("pl", {
-        savePNGText : "Pobierz PNG",
-        saveJPGText : "Pobierz JPG",
-        printText   : "Drukuj"
-    });
-    chart = new CanvasJS.Chart("chartContainer", {
-        exportEnabled: true,
-	    animationEnabled: true,    
-        title:{
-            text: "Natężenie linii dyfrakcyjnych w zależności od kąta 2θ"              
-        },
-        culture: "pl",
-        axisX: {
-            title: "Kąt dyfrakcji 2θ [deg]"
-        },
-        axisY: {
-            title: "Intensywność promieniowania"
-        },
-        data: [{
-            type: 'splineArea',
-            dataPoints: []
-        }]
-    });
-    updateChartData(intensities);
-}
-
 window.onload = function () {
     createChart([]);
     createSlider();
+    createDataTable([]);
 }

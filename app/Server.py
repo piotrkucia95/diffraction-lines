@@ -39,18 +39,11 @@ class Server:
         def get_element():
             search_term = request.args.get('searchTerm')
             results = self.db.search_elements(search_term)
-            elements = []
-            for result in results:
-                elements.append({
-                    "id"          : result[4],
-                    "displayName" : result[3],
-                    "dhkl"        : result[2]
-                })
-            return jsonify(elements)
+            return jsonify(results)
 
         @self.app.route('/diffraction-intensities', methods=['POST'])
         def calculate_intensities():
-            params = request.get_json()
+            p = request.get_json()
             intensities_tuple = self.math.calculate_intensities(params)
             self.db.save_calculations(params)
             return jsonify(
@@ -60,7 +53,8 @@ class Server:
 
         @self.app.route('/calculations', methods=['GET'])
         def get_calculations():
-            return jsonify(self.db.get_calculations()) 
+            results = self.db.get_calculations()
+            return jsonify(results) 
     
     def run_server(self):
         self.app.run(host='0.0.0.0', port=self.port)

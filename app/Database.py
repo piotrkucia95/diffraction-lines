@@ -1,3 +1,5 @@
+from Element import Element
+from Calculation import Calculation
 import psycopg2
 import uuid
 from configparser import ConfigParser
@@ -21,25 +23,51 @@ class Database:
 
         return db
 
+    def get_element(self, id):
+        cur = self.conn.cursor()
+        cur.execute('SELECT * FROM elements WHERE id = %s', (id,))
+        results = cur.fetchall()
+        cur.close()
+        return result
+
     def search_elements(self, search_term):
         search_term = '%' + search_term + '%'
         cur = self.conn.cursor()
         cur.execute('SELECT * FROM elements WHERE LOWER(display_name) LIKE LOWER(%s)', (search_term,))
         results = cur.fetchall()
         cur.close()
-        return results
+        elements = []
+        for r in results:
+            element = Element(r[0], r[1], r[2], r[3], r[4])
+            elements.append(element.__dict__)
+        return elements
 
     def save_calculations(self, params):
         cur = self.conn.cursor()
         calc_id = uuid.uuid4()
-        cur.execute('INSERT INTO calculations(id, element_a_id, element_b_id, n_a, m_b, n, w_a, w_b, g_a, g_b, theta_2_min, theta_2_max, standard) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
-                    (str(calc_id), params['element_a_id'],params['element_b_id'],params['n_a'],params['m_b'],params['n'],params['w_a'],params['w_b'],params['g_a'],params['g_b'],params['theta_2_min'],params['theta_2_max'], False),)
+        query = """INSERT INTO calculations(id, element_a_id, element_b_id, n_a, m_b, n, w_a, w_b, g_a, g_b, theta_2_min, theta_2_max, standard) 
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        cur.execute(query, (str(calc_id), params['elementAId'], params['elementBId'], params['nA'], params['mB'], params['n'],
+                            params['wA'], params['wB'], params['gA'], params['gB'], params['theta2Min'], params['theta2Max'], False),)
         self.conn.commit()
         cur.close()
 
     def get_calculations(self):
         cur = self.conn.cursor()
-        cur.execute('SELECT * FROM calculations ORDER BY created_date DESC LIMIT 10', ())
+        query = """SELECT * FROM calculations 
+                INNER JOIN elements el_a ON calculations.element_a_id = el_a.id 
+                INNER JOIN elements el_b ON calculations.element_b_id = el_b.id 
+                ORDER BY created_date DESC LIMIT 100"""
+        cur.execute(query, ())
         results = cur.fetchall()
         cur.close()
-        return results
+
+        calculations = []
+
+        for r in results:
+            el_a = Element(r[14], r[15], r[16], r[17], r[18])
+            el_b = Element(r[19], r[20], r[21], r[22], r[23])
+            calc = Calculation(r[0], el_a.__dict__, el_b.__dict__, r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13])
+            calculations.append(calc.__dict__)
+        
+        return calculations
