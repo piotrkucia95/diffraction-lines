@@ -43,7 +43,7 @@ class Server:
 
         @self.app.route('/diffraction-intensities', methods=['POST'])
         def calculate_intensities():
-            p = request.get_json()
+            params = request.get_json()
             intensities_tuple = self.math.calculate_intensities(params)
             self.db.save_calculations(params)
             return jsonify(
@@ -55,6 +55,15 @@ class Server:
         def get_calculations():
             results = self.db.get_calculations()
             return jsonify(results) 
+
+        @self.app.route('/calculations/<id>', methods=['PATCH'])
+        def update_calculation(id):
+            result = self.db.update_calculation(id)
+            intensities_tuple = self.math.calculate_intensities(result)
+            return jsonify(
+                intensities=intensities_tuple[0],
+                time=intensities_tuple[1]
+            )
     
     def run_server(self):
         self.app.run(host='0.0.0.0', port=self.port)

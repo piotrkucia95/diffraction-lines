@@ -2,6 +2,7 @@ from Element import Element
 from Calculation import Calculation
 import psycopg2
 import uuid
+import datetime 
 from configparser import ConfigParser
 
 class Database:
@@ -54,10 +55,12 @@ class Database:
 
     def get_calculations(self):
         cur = self.conn.cursor()
-        query = """SELECT * FROM calculations 
-                INNER JOIN elements el_a ON calculations.element_a_id = el_a.id 
-                INNER JOIN elements el_b ON calculations.element_b_id = el_b.id 
-                ORDER BY created_date DESC LIMIT 100"""
+        query = """
+                    SELECT * FROM calculations 
+                    JOIN elements el_a ON calculations.element_a_id = el_a.id 
+                    JOIN elements el_b ON calculations.element_b_id = el_b.id 
+                    ORDER BY created_date DESC LIMIT 100
+                """
         cur.execute(query, ())
         results = cur.fetchall()
         cur.close()
@@ -69,5 +72,38 @@ class Database:
             el_b = Element(r[19], r[20], r[21], r[22], r[23])
             calc = Calculation(r[0], el_a.__dict__, el_b.__dict__, r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13])
             calculations.append(calc.__dict__)
-        
+
         return calculations
+
+    def update_calculation(self, id):
+        cur = self.conn.cursor()
+        # query = """UPDATE calculations SET created_date = %s 
+        #         FROM (
+        #                 SELECT * FROM calculations
+        #                 WHERE id = %s
+        #                 FOR UPDATE
+        #             ) sub
+        #             JOIN elements el_a ON sub.element_a_id = el_a.id 
+        #             JOIN elements el_b ON sub.element_b_id = el_b.id 
+        #         WHERE id = %s
+        #         RETURNING mytable.mycolumn, j.othercolumn"""
+
+        query = """
+                    WITH updated AS (
+                        UPDATE calculations SET created_date = %s WHERE id = %s RETURNING *
+                    )
+                    SELECT updated.*, el_a.*, el_b.*
+                    FROM updated
+                    JOIN elements el_a ON updated.element_a_id = el_a.id 
+                    JOIN elements el_b ON updated.element_b_id = el_b.id
+                """
+
+        cur.execute(query, (datetime.datetime.now(), id))
+        r = cur.fetchone()
+        cur.close()
+
+        el_a = Element(r[14], r[15], r[16], r[17], r[18])
+        el_b = Element(r[19], r[20], r[21], r[22], r[23])
+        calc = Calculation(r[0], el_a.__dict__, el_b.__dict__, r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13])
+
+        return calc.__dict__

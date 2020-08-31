@@ -8,7 +8,7 @@ var initInverseRequest = function() {
 var displayInverseResults = function(results, order) {
     var inverseHTML = '';
     if (order < 6) {
-        inverseHTML = '<div id="echelon" class="pt-4">Macierz odwrotna:'
+        inverseHTML = '<div id="echelon" class="pt-2">Macierz odwrotna:'
         inverseHTML += '<table class="echelon-matrix mt-2">';
         for (let row of results.inverse) {
             inverseHTML += '<tr><td> </td>';
@@ -147,9 +147,10 @@ var decreaseYScale = function() {
 }
 
 var createDataTable = function(data) {
-    $('#history').DataTable({
+    dataTable = $('#history').DataTable({
         data: data,
         columns: [
+            { title: "Id" },
             { title: "Pierwiastek A" },
             { title: "Pierwiastek B" },
             { title: "n<sub>A</sub>" },
@@ -160,12 +161,12 @@ var createDataTable = function(data) {
             { title: "g<sub>A</sub>" },
             { title: "g<sub>B</sub>" },
             { title: "Zakres kąta 2θ" },
-            { title: "Data" }
+            { title: "Data" },
+            { title: "" }
         ], 
+        order: [[ 11, "desc" ]],
         language: {
             "emptyTable": "Nie znaleziono wyników",
-            "lengthMenu": "Pokaż _MENU_ ostatnich obliczeń",
-            "info"      : "_START_ do _END_ z _TOTAL_ wszystkich wyników",
             "infoEmpty":  "Brak wyników",
             "search"    : "Szukaj:",
             "paginate"  : {
@@ -174,10 +175,48 @@ var createDataTable = function(data) {
                 "next"     : "Następna",
                 "previous" : "Poprzednia"
             },
+        },
+        scrollY:        '57vh',
+        scrollX:        '100%',
+        aoColumnDefs: [{ 
+            bVisible: false, aTargets: [0]
+        }, {
+            orderable: false, aTargets: [12], 
+        }]
+    });
+    setTimeout(() => dataTable.columns.adjust(), 150);
+}
+
+var addRowClickHandler = function() {
+    $('#history tbody').on('click', 'tr', function (event) {
+        var data = dataTable.row( this ).data();
+        if (event.target.id == 'select') {
+            selectCalcRow(data[0]);
+        } else if (event.target.id == 'delete') {
+            deleteCalcRow(data[0]);
         }
     });
 }
 
-var destroyDataTable = function() {
-    $('#history').DataTable().destroy();
+var selectCalcRow = function(calcId) {
+    jQuery.ajax({ url: '/calculations/' + calcId, type: 'patch' })
+    .done((data) => {
+        console.log('xd');
+    })
+    .fail((error) => {
+        console.log(error);
+    })
+    .always(() => {
+        jQuery('#diffraction-spinner').addClass('d-none');
+    });
+}
+
+var deleteCalcRow = function() {
+
+}
+
+var addCloseModalHandler = function() {
+    $('.history-modal').on('hidden.bs.modal', function (e) {
+        $('#history').DataTable().destroy();
+    })
 }

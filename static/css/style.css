@@ -64,7 +64,7 @@ i:hover {
     background-color: #007bff;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
     .modal-dialog {
         width: 80% !important;
         max-width: 80% !important;

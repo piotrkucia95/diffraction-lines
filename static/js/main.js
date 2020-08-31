@@ -121,16 +121,20 @@ var getCalculations = function() {
         displayedData = [];
         data.forEach(calc => {
             var row = [
-                calc.elementA.name, calc.elementB.name, calc.nA, 
+                calc.id, calc.elementA.name, calc.elementB.name, calc.nA, 
                 calc.mB, calc.n, calc.wA, calc.wB, calc.gA, calc.gB, 
                 calc.theta2Min + '&deg; - ' + calc.theta2Max + '&deg;',  
-                new Date(calc.createdDate).toLocaleDateString()
+                new Date(calc.createdDate).toLocaleDateString(),
+                `<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                <button type="button" id="select" class="btn btn-primary">Wybierz</button>
+                <button type="button" id="delete" class="btn btn-primary">Usuń</button>
+              </div>`
             ];
             displayedData.push(row);
             dataTableData = displayedData;
         });
-        destroyDataTable();
         createDataTable(displayedData);
+        addRowClickHandler();
     })
     .fail((error) => {
         console.log(error);
@@ -159,5 +163,6 @@ var createDataPoints = function(intensities) {
 window.onload = function () {
     createChart([]);
     createSlider();
-    createDataTable([]);
+    addCloseModalHandler();
 }
+
