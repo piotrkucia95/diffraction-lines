@@ -3,5 +3,5 @@ class Element:
         self.name = name
         self.symbol = symbol
         self.dhkl = dhkl
-        self.displayName = display_name
+        self.display_name = display_name
         self.id = id

@@ -91,7 +91,6 @@ var getIntensities = function() {
 }
 
 var sendIntensitiesRequest = function(requestData) {
-    clearChart();
     jQuery('#diffraction-spinner').removeClass('d-none');
     jQuery.ajax({
         url: '/diffraction-intensities', 
@@ -100,11 +99,8 @@ var sendIntensitiesRequest = function(requestData) {
         contentType : 'application/json'
     })
     .done((data) => {
-        createChart(data.intensities);
-        timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
-        jQuery('#diffraction-results').append(timeMessage);
-        jQuery('#y-scale-increase').removeAttr("disabled");
-        jQuery('#y-scale-decrease').removeAttr("disabled");
+        clearChart();
+        renderDiffractionResults(data);
     })
     .fail((error) => {
         console.log(error);
@@ -114,6 +110,14 @@ var sendIntensitiesRequest = function(requestData) {
     });
 }
 
+var renderDiffractionResults = function(data) {
+    createChart(data.intensities);
+    timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
+    jQuery('#diffraction-results').append(timeMessage);
+    jQuery('#y-scale-increase').removeAttr("disabled");
+    jQuery('#y-scale-decrease').removeAttr("disabled");
+}
+
 var getCalculations = function() {
     jQuery('#history').html('');
     jQuery.ajax({ url: '/calculations', type: 'get' })
@@ -121,10 +125,11 @@ var getCalculations = function() {
         displayedData = [];
         data.forEach(calc => {
             var row = [
-                calc.id, calc.elementA.name, calc.elementB.name, calc.nA, 
-                calc.mB, calc.n, calc.wA, calc.wB, calc.gA, calc.gB, 
-                calc.theta2Min + '&deg; - ' + calc.theta2Max + '&deg;',  
-                new Date(calc.createdDate).toLocaleDateString(),
+                calc.id, calc["element_a"]["dhkl"], calc["element_b"]["dhkl"],calc["element_a"]["id"], 
+                calc["element_b"]["id"], calc["element_a"]["display_name"], calc["element_b"]["display_name"], 
+                calc["n_a"], calc["m_b"], calc["n"], calc["w_a"], calc["w_b"], calc["g_a"], calc["g_b"], 
+                calc["theta_2_min"] + '&deg; - ' + calc["theta_2_max"] + '&deg;',  
+                new Date(calc["created_date"]).toLocaleDateString(),
                 `<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
                 <button type="button" id="select" class="btn btn-primary">Wybierz</button>
                 <button type="button" id="delete" class="btn btn-primary">Usuń</button>
@@ -139,9 +144,6 @@ var getCalculations = function() {
     .fail((error) => {
         console.log(error);
     })
-    .always(() => {
-        jQuery('#diffraction-spinner').addClass('d-none');
-    });
 }
 
 var updateChartData = function(intensities) {
@@ -165,4 +167,3 @@ window.onload = function () {
     createSlider();
     addCloseModalHandler();
 }
-

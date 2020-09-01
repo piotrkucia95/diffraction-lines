@@ -1,5 +1,7 @@
 from Math import Math
 from Database import Database
+from Element import Element
+from Calculation import Calculation
 from flask import Flask, jsonify, request
 import os
 
@@ -35,17 +37,27 @@ class Server:
                 time=inverse_tuple[1]
             )
 
-        @self.app.route('/elements')
+        @self.app.route('/elements', methods=['GET'])
         def get_element():
             search_term = request.args.get('searchTerm')
             results = self.db.search_elements(search_term)
             return jsonify(results)
 
+        @self.app.route('/elements', methods=['POST'])
+        def add_element():
+            p = request.get_json()
+            new_element = Element(p["name"], p["symbol"], p["dhkl"], p["displayName"], '')
+            self.db.add_element(new_element)
+            return 'Element added!'
+
         @self.app.route('/diffraction-intensities', methods=['POST'])
         def calculate_intensities():
-            params = request.get_json()
-            intensities_tuple = self.math.calculate_intensities(params)
-            self.db.save_calculations(params)
+            p = request.get_json()
+            el_a = Element('', '', p["dA"], '', p["elementAId"])
+            el_b = Element('', '', p["dB"], '', p["elementBId"])
+            calc = Calculation('', el_a, el_b, p["nA"], p["mB"], p["n"], p["wA"], p["wB"], p["gA"], p["gB"], p["theta2Min"], p["theta2Max"], False, None)
+            intensities_tuple = self.math.calculate_intensities(calc)
+            self.db.save_calculation(calc)
             return jsonify(
                 intensities=intensities_tuple[0],
                 time=intensities_tuple[1]
@@ -58,13 +70,18 @@ class Server:
 
         @self.app.route('/calculations/<id>', methods=['PATCH'])
         def update_calculation(id):
-            result = self.db.update_calculation(id)
-            intensities_tuple = self.math.calculate_intensities(result)
+            calc = self.db.update_calculation(id)
+            intensities_tuple = self.math.calculate_intensities(calc)
             return jsonify(
                 intensities=intensities_tuple[0],
                 time=intensities_tuple[1]
             )
     
+        @self.app.route('/calculations/<id>', methods=['DELETE'])
+        def delete_calculation(id):
+            self.db.delete_calculation(id)
+            return 'Calculation removed!'
+
     def run_server(self):
         self.app.run(host='0.0.0.0', port=self.port)
         

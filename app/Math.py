@@ -1,3 +1,5 @@
+from Element import Element
+from Calculation import Calculation
 import numpy as np
 import math
 import time 
@@ -50,14 +52,14 @@ class Math:
         end_time = time.time()
         return (inverse, (end_time - start_time))
 
-    def calculate_intensities(self, params):
+    def calculate_intensities(self, calc):
         start_time = time.time()
 
         lambda_length = 1.54 # angstrem
         pi = 3.14
         intensities = []
         
-        for _2_theta in range(int(params['theta2Min'] * 100), int(params['theta2Max'] * 100) + 1):
+        for _2_theta in range(int(calc.theta_2_min * 100), int(calc.theta_2_max * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
             cos_2_theta = math.cos(rad_2_theta)
@@ -69,16 +71,16 @@ class Math:
             
             sum_a = 0
             sum_b = 0
-            for i in range(params['n']):
-                for j in range(params['nA']):
-                    xj_a = i * (params['nA'] * params['dA'] + params['mB'] * params['dB']) + params['dA'] * j
+            for i in range(calc.n):
+                for j in range(calc.n_a):
+                    xj_a = i * (calc.n_a * calc.element_a.dhkl + calc.m_b * calc.element_b.dhkl) + calc.element_a.dhkl * j
                     # sum_a += np.exp(complex(0, 4 * pi * xj_a * s))
-                    sum_a += (np.exp(-params['wA'] * math.pow(s, 2)) * params['gA'] * np.exp(complex(0, 4 * pi * xj_a * s)))
+                    sum_a += (np.exp(-calc.w_a * math.pow(s, 2)) * calc.g_a * np.exp(complex(0, 4 * pi * xj_a * s)))
 
-                for j in range(params['mB']):
-                    xj_b = i * (params['nA'] * params['dA'] + params['mB'] * params['dB']) + (params['nA'] * params['dA']) + (params['dB'] * j)
+                for j in range(calc.m_b):
+                    xj_b = i * (calc.n_a * calc.element_a.dhkl + calc.m_b * calc.element_b.dhkl) + (calc.n_a * calc.element_a.dhkl) + (calc.element_b.dhkl * j)
                     # sum_a += np.exp(complex(0, 4 * pi * xj_b * s))
-                    sum_b += (np.exp(-params['wB'] * math.pow(s, 2)) * params['gB'] * np.exp(complex(0, 4 * pi * xj_b * s)))
+                    sum_b += (np.exp(-calc.w_b * math.pow(s, 2)) * calc.g_b * np.exp(complex(0, 4 * pi * xj_b * s)))
 
             # intensity = math.pow(abs(sum_a + sum_b), 2)
             intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0

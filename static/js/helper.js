@@ -79,7 +79,7 @@ var displaySearchResults = function(elements, elementId) {
 var generateDropdownItemsHTML = function(elements, elementId) {
     var dropdownItemsHTML = '';
     elements.forEach(element => {
-        dropdownItemsHTML += '<li class="dropdown-item" data-dhkl="' + element.dhkl + '" data-element="' + element.id + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + element.displayName + '</li>';
+        dropdownItemsHTML += '<li class="dropdown-item" data-dhkl="' + element["dhkl"] + '" data-element="' + element["id"] + '" data-parent="' + elementId + '" onclick="handleSearchResultsClick(event)">' + element["display_name"] + '</li>';
     });
     return dropdownItemsHTML;
 }
@@ -151,6 +151,10 @@ var createDataTable = function(data) {
         data: data,
         columns: [
             { title: "Id" },
+            { title: "A dhkl" },
+            { title: "B dhkl" },
+            { title: "A Id" },
+            { title: "B Id" },
             { title: "Pierwiastek A" },
             { title: "Pierwiastek B" },
             { title: "n<sub>A</sub>" },
@@ -179,9 +183,9 @@ var createDataTable = function(data) {
         scrollY:        '57vh',
         scrollX:        '100%',
         aoColumnDefs: [{ 
-            bVisible: false, aTargets: [0]
+            bVisible: false, aTargets: [0, 1, 2, 3, 4]
         }, {
-            orderable: false, aTargets: [12], 
+            orderable: false, aTargets: [16], 
         }]
     });
     setTimeout(() => dataTable.columns.adjust(), 150);
@@ -189,30 +193,58 @@ var createDataTable = function(data) {
 
 var addRowClickHandler = function() {
     $('#history tbody').on('click', 'tr', function (event) {
-        var data = dataTable.row( this ).data();
+        var data = dataTable.row(this).data();
         if (event.target.id == 'select') {
-            selectCalcRow(data[0]);
+            selectCalcRow(data);
         } else if (event.target.id == 'delete') {
-            deleteCalcRow(data[0]);
+            deleteCalcRow(data[0], this);
         }
     });
 }
 
-var selectCalcRow = function(calcId) {
-    jQuery.ajax({ url: '/calculations/' + calcId, type: 'patch' })
+var selectCalcRow = function(calc) {
+    clearChart();
+    jQuery('#history-spinner').removeClass('d-none');
+    jQuery.ajax({ url: '/calculations/' + calc[0], type: 'patch' })
     .done((data) => {
-        console.log('xd');
+        dA = calc[1];
+        dB = calc[2];
+        elementAId = calc[3];
+        elementBId = calc[4];
+        jQuery('#element-a-search').val(calc[5]);
+        jQuery('#element-b-search').val(calc[6]);
+        jQuery('#na-input').val(calc[7]);
+        jQuery('#mb-input').val(calc[8]);
+        jQuery('#n-input').val(calc[9]);
+        jQuery('#wa-input').val(calc[10]);
+        jQuery('#wb-input').val(calc[11]);
+        jQuery('#ga-input').val(calc[12]);
+        jQuery('#gb-input').val(calc[13]);
+        var theta2Range = calc[14].split(' - ');
+        slider.noUiSlider.set([parseFloat(theta2Range[0]), parseFloat(theta2Range[1])]);
+        $('.history-modal').modal('hide');
+        renderDiffractionResults(data);
     })
     .fail((error) => {
         console.log(error);
     })
     .always(() => {
-        jQuery('#diffraction-spinner').addClass('d-none');
-    });
+        jQuery('#history-spinner').addClass('d-none');
+    })
 }
 
-var deleteCalcRow = function() {
-
+var deleteCalcRow = function(id, row) {
+    jQuery('#history-spinner').removeClass('d-none');
+    jQuery.ajax({ url: '/calculations/' + id, type: 'delete' })
+    .done((data) => {
+        dataTable.row(row).remove().draw();
+    })
+    .fail((error) => {
+        console.log(error);
+    })
+    .always(() => {
+        jQuery('#history-spinner').addClass('d-none');
+    })
 }
 
 var addCloseModalHandler = function() {
