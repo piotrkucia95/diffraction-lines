@@ -1,3 +1,8 @@
+.btn-green {
+    background-color: #00693c;
+    color: white;
+}
+
 .inversion-input, .equations-input {
     width: 30px;
 }
@@ -61,7 +66,16 @@ i:hover {
 }
 
 .noUi-connect {
-    background-color: #007bff;
+    background-color: #00693c;
+}
+
+.button-column {
+    min-width: 130px;
+}
+
+.modal {
+    padding-right: 0 !important;
+    height: calc(100% - .5rem) !important;
 }
 
 @media (min-width: 768px) {

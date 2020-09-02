@@ -1,11 +1,11 @@
-from Element import Element
-from Calculation import Calculation
+from element import Element
+from calculation import Calculation
 import numpy as np
 import math
 import time 
 import sys
 
-class Math:
+class Mathematics:
     def create_matrix(self, order):
         matrix = [[(order + 1 if x == y else 1) for x in range(order)] for y in range(order)]
         return matrix

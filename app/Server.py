@@ -1,7 +1,7 @@
-from Math import Math
-from Database import Database
-from Element import Element
-from Calculation import Calculation
+from mathematics import Mathematics
+from database import Database
+from element import Element
+from calculation import Calculation
 from flask import Flask, jsonify, request
 import os
 
@@ -9,7 +9,7 @@ class Server:
     def __init__(self):  
         self.app = Flask(__name__, static_url_path='', static_folder='../static')
         self.port = int(os.environ.get("PORT", 5000))
-        self.math = Math()
+        self.mathematics = Mathematics()
         self.db = Database()
         self.set_routes() 
         self.run_server()
@@ -21,8 +21,8 @@ class Server:
 
         @self.app.route('/matrix-inverse/gauss/<order>')
         def matrix_inverse_gauss(order):
-            matrix = self.math.create_matrix(int(order))
-            inverse_tuple = self.math.inverse_gauss(matrix)
+            matrix = self.mathematics.create_matrix(int(order))
+            inverse_tuple = self.mathematics.inverse_gauss(matrix)
             return jsonify(
                 inverse=inverse_tuple[0] if int(order) <= 10 else [],
                 time=inverse_tuple[1]
@@ -30,8 +30,8 @@ class Server:
 
         @self.app.route('/matrix-inverse/numpy/<order>')
         def matrix_inverse_numpy(order):
-            matrix = self.math.create_matrix(int(order))
-            inverse_tuple = self.math.inverse_numpy(matrix)
+            matrix = self.mathematics.create_matrix(int(order))
+            inverse_tuple = self.mathematics.inverse_numpy(matrix)
             return jsonify(
                 inverse=inverse_tuple[0] if int(order) <= 10 else [],
                 time=inverse_tuple[1]
@@ -56,7 +56,7 @@ class Server:
             el_a = Element('', '', p["dA"], '', p["elementAId"])
             el_b = Element('', '', p["dB"], '', p["elementBId"])
             calc = Calculation('', el_a, el_b, p["nA"], p["mB"], p["n"], p["wA"], p["wB"], p["gA"], p["gB"], p["theta2Min"], p["theta2Max"], False, None)
-            intensities_tuple = self.math.calculate_intensities(calc)
+            intensities_tuple = self.mathematics.calculate_intensities(calc)
             self.db.save_calculation(calc)
             return jsonify(
                 intensities=intensities_tuple[0],
@@ -71,7 +71,7 @@ class Server:
         @self.app.route('/calculations/<id>', methods=['PATCH'])
         def update_calculation(id):
             calc = self.db.update_calculation(id)
-            intensities_tuple = self.math.calculate_intensities(calc)
+            intensities_tuple = self.mathematics.calculate_intensities(calc)
             return jsonify(
                 intensities=intensities_tuple[0],
                 time=intensities_tuple[1]

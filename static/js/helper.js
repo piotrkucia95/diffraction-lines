@@ -1,4 +1,8 @@
 var searchBlurActive = true;
+var chartSubtitle = {
+    fontFamily: 'sans-serif',
+    fontSize: '24'            
+};
 
 var initInverseRequest = function() {
     clearPanel();
@@ -28,7 +32,8 @@ var clearPanel = function() {
     jQuery('#inverse-time').remove();
 }
 
-var createChart = function(intensities) {
+var createChart = function(intensities, chartSubtitles) {
+    CanvasJS.addColorSet("aghColorSet", ['#a71930', '#00693c', '#1e1e1e', '#ffffff']);
     CanvasJS.addCultureInfo("pl", {
         savePNGText : "Pobierz PNG",
         saveJPGText : "Pobierz JPG",
@@ -36,23 +41,34 @@ var createChart = function(intensities) {
     });
     chart = new CanvasJS.Chart("chartContainer", {
         exportEnabled: true,
-	    animationEnabled: true,    
-        title:{
-            text: "Natężenie linii dyfrakcyjnych w zależności od kąta 2θ"              
-        },
+        animationEnabled: true,
+        colorSet:  "aghColorSet",
         culture: "pl",
         axisX: {
-            title: "Kąt dyfrakcji 2θ [deg]"
+            titleFontFamily: "sans-serif",
+            titleFontSize: "20",
+            title: "Kąt dyfrakcji 2θ [\u00b0]",
         },
         axisY: {
-            title: "Intensywność promieniowania"
+            titleFontFamily: "sans-serif",
+            titleFontSize: "20",
+            title: "Intensywność promieniowania",
         },
         data: [{
             type: 'splineArea',
             dataPoints: []
         }]
     });
+    setChartSubtitles(chartSubtitles);
     updateChartData(intensities);
+}
+
+var setChartSubtitles = function(subtitleTextList) {
+    chart.options.subtitles = [];
+    subtitleTextList.forEach(text => {
+        chartSubtitle.text = text;
+        chart.options.subtitles.push({...chartSubtitle});
+    });
 }
 
 var clearChart = function() {
@@ -170,10 +186,16 @@ var createDataTable = function(data) {
         ], 
         order: [[ 11, "desc" ]],
         language: {
-            "emptyTable": "Nie znaleziono wyników",
-            "infoEmpty":  "Brak wyników",
-            "search"    : "Szukaj:",
-            "paginate"  : {
+            "emptyTable"     : "Nie znaleziono wyników",
+            "info"           : "_START_ do _END_ z _TOTAL_ wyników",
+            "infoEmpty"      : "Brak wyników",
+            "infoFiltered"   : "(łącznie _MAX_ wyników)",
+            "lengthMenu"     : "Pokaż _MENU_ wyników",
+            "loadingRecords" : "Wczytuję...",
+            "processing"     : "Przetwarzam...",
+            "search"         : "Szukaj:",
+            "zeroRecords"    : "Brak rekordów",
+            "paginate"       : {
                 "first"    : "Pierwsza",
                 "last"     : "Ostatnia",
                 "next"     : "Następna",
@@ -223,7 +245,7 @@ var selectCalcRow = function(calc) {
         var theta2Range = calc[14].split(' - ');
         slider.noUiSlider.set([parseFloat(theta2Range[0]), parseFloat(theta2Range[1])]);
         $('.history-modal').modal('hide');
-        renderDiffractionResults(data);
+        renderDiffractionResults(data, [calc[5], calc[6], calc[7], calc[8], calc[9]]);
     })
     .fail((error) => {
         console.log(error);

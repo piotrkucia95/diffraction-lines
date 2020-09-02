@@ -1,4 +1,4 @@
-from Element import Element
+from element import Element
 
 class Calculation:
     def __init__(self, id, element_a, element_b, n_a, m_b, n, w_a, w_b, g_a, g_b, t2_min, t2_max, standard, date):

@@ -73,24 +73,24 @@ var getIntensities = function() {
         jQuery('#diffraction-error').addClass('d-none');
         jQuery('#theta-range-error').addClass('d-none');
         sendIntensitiesRequest({
-            elementAId : elementAId,
-            elementBId : elementBId,
-            dA         : +dA,
-            dB         : +dB,
-            nA         : +nA,
-            mB         : +mB,
-            n          : +n,
-            wA         : +jQuery('#wa-input').val() || 0,
-            wB         : +jQuery('#wb-input').val() || 0,
-            gA         : +jQuery('#ga-input').val() || 1,
-            gB         : +jQuery('#gb-input').val() || 1,
-            theta2Min  : +theta2Range[0],
-            theta2Max  : +theta2Range[1]
+            elementAId   : elementAId,
+            elementBId   : elementBId,
+            dA           : +dA,
+            dB           : +dB,
+            nA           : +nA,
+            mB           : +mB,
+            n            : +n,
+            wA           : +jQuery('#wa-input').val() || 0,
+            wB           : +jQuery('#wb-input').val() || 0,
+            gA           : +jQuery('#ga-input').val() || 1,
+            gB           : +jQuery('#gb-input').val() || 1,
+            theta2Min    : +theta2Range[0],
+            theta2Max    : +theta2Range[1]
         });
     }
 }
 
-var sendIntensitiesRequest = function(requestData) {
+var sendIntensitiesRequest = function(requestData, elA, elB) {
     jQuery('#diffraction-spinner').removeClass('d-none');
     jQuery.ajax({
         url: '/diffraction-intensities', 
@@ -100,7 +100,7 @@ var sendIntensitiesRequest = function(requestData) {
     })
     .done((data) => {
         clearChart();
-        renderDiffractionResults(data);
+        renderDiffractionResults(data, [elA, elB, requestData.nA, requestData.mB, requestData.n]);
     })
     .fail((error) => {
         console.log(error);
@@ -110,8 +110,11 @@ var sendIntensitiesRequest = function(requestData) {
     });
 }
 
-var renderDiffractionResults = function(data) {
-    createChart(data.intensities);
+var renderDiffractionResults = function(data, paramsList) {
+    createChart(data.intensities, [
+        paramsList[0] + ', ' + paramsList[1],
+        'nA = ' + paramsList[3] + ', mB = ' + paramsList[4] + ', N = ' + paramsList[2]
+    ]);
     timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
     jQuery('#diffraction-results').append(timeMessage);
     jQuery('#y-scale-increase').removeAttr("disabled");
@@ -130,10 +133,10 @@ var getCalculations = function() {
                 calc["n_a"], calc["m_b"], calc["n"], calc["w_a"], calc["w_b"], calc["g_a"], calc["g_b"], 
                 calc["theta_2_min"] + '&deg; - ' + calc["theta_2_max"] + '&deg;',  
                 new Date(calc["created_date"]).toLocaleDateString(),
-                `<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                <button type="button" id="select" class="btn btn-primary">Wybierz</button>
-                <button type="button" id="delete" class="btn btn-primary">Usuń</button>
-              </div>`
+                `<div class="row button-column">
+                    <button type="button" id="select" class="btn btn-sm btn-green">Wybierz</button>
+                    <button type="button" id="delete" class="btn btn-sm btn-green ml-1">Usuń</button>
+                </div>`
             ];
             displayedData.push(row);
             dataTableData = displayedData;
@@ -163,7 +166,7 @@ var createDataPoints = function(intensities) {
 }
 
 window.onload = function () {
-    createChart([]);
+    createChart([], ['Natężenie linii dyfrakcyjnych w zależności od kąta 2θ']);
     createSlider();
     addCloseModalHandler();
 }

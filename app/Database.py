@@ -1,5 +1,5 @@
-from Element import Element
-from Calculation import Calculation
+from element import Element
+from calculation import Calculation
 import psycopg2
 import uuid
 import datetime 
