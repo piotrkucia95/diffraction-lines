@@ -16,8 +16,20 @@ class Server:
            
     def set_routes(self):
         @self.app.route('/')
-        def index():
+        def send_index():
             return self.app.send_static_file('index.html')
+
+        @self.app.route('/basic-calculations')
+        def send_basic_calculations():
+            return self.app.send_static_file('basic-calculations.html')
+
+        @self.app.route('/advanced-calculations')
+        def send_advanced_calculations():
+            return self.app.send_static_file('advanced-calculations.html')
+
+        @self.app.route('/matrix-inversion')
+        def send_matrix_inversion():
+            return self.app.send_static_file('matrix-inversion.html')
 
         @self.app.route('/matrix-inverse/gauss/<order>')
         def matrix_inverse_gauss(order):

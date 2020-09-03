@@ -3,6 +3,14 @@
     color: white;
 }
 
+.btn-green:hover {
+    color: #efefef;
+}
+
+.canvasjs-chart-toolbar button:hover, .canvasjs-chart-toolbar div div:hover {
+    background-color: #a71930 !important;
+}
+
 .inversion-input, .equations-input {
     width: 30px;
 }
@@ -47,12 +55,12 @@
     cursor: pointer;
 }
 
-i {
+#diffraction-container i {
     font-size: 13px;
     color: #A8A8A8;
 }
 
-i:hover {
+#diffraction-container i:hover {
     cursor: pointer;
     color: #888888;
 }
