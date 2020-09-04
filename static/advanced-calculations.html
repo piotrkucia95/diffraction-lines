@@ -59,15 +59,27 @@
         <div class="pt-2 row">
             <div class="col-md-3 col-sm-12">
                 <div class="form-group">
-                    <div class="radio">
-                        <label><input type="radio" name="optradio" checked>&nbsp;Option 1</label>
+                    <label for="calc-type-select">Sposób ustawienia wartości d<sub>hkl</sub>:</label>
+                    <select class="form-control" id="calc-type-select" onchange="showSelectedInputs(event)">
+                        <option value="dhkl" selected>Ręczne ustawienie wartości d<sub>hkl</sub></option>
+                        <option value="elements">Wybór pierwiasktów</option>
+                    </select>
+                </div>
+                <div class="dhkl-inputs row">
+                    <div class="col form-group">
+                        <label for="da-input">
+                            d<sub>A</sub>: <i class="fas fa-info-circle" id="d-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Odległość międzypłaszczyznowa pierwiastka A [&#8491;]." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" min="0" step="0.0001" class="form-control" id="da-input"/>
                     </div>
-                    <div class="radio">
-                        <label><input type="radio" name="optradio">&nbsp;Option 2</label>
+                    <div class="col form-group">
+                        <label for="db-input">
+                           d<sub>B</sub>: <i class="fas fa-info-circle" id="d-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Odległość międzypłaszczyznowa pierwiastka B [&#8491;]." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" min="0" step="0.0001" class="form-control" id="db-input"/>
                     </div>
                 </div>
-                
-                <div class="form-group">
+                <div class="element-a-input form-group d-none">
                     <div class="dropdown">
                         <label for="element-a-search">
                             Pierwiastek A: <i class="fas fa-info-circle" id="element-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Pierwiastek tworzący pierwszą warstwę powłoki (warstwę A)." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
@@ -76,7 +88,7 @@
                         <ul id="a-search-results" class="dropdown-content d-none" onmousedown="handleSearchResultsMouseDown()" onmouseup="handleSearchResultsMouseUp()"></ul>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="element-b-input form-group d-none">
                     <div class="dropdown">
                         <label for="element-b-search">
                             Pierwiastek B: <i class="fas fa-info-circle" id="element-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Pierwiastek tworzący drugą warstwę powłoki (warstwę B)." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
@@ -98,11 +110,19 @@
                         </label>
                         <input type="number" min="1" class="form-control" id="mb-input"/>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col form-group">
                         <label for="n-input">
                             N: <i class="fas fa-info-circle" id="n-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Liczba powtórzeń warstw A i B w powłoce." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
                         <input type="number" min="1" class="form-control" id="n-input"/>
+                    </div>
+                    <div class="col form-group">
+                        <label for="lambda-input">
+                            &lambda;: <i class="fas fa-info-circle" id="lambda-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Długość fali promieniowania rentgenowskiego [&#8491;]. Domyślna wartość: 1,54." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" min="0" step="0.01" class="form-control" id="lambda-input"/>
                     </div>
                 </div>
                 <div class="row">

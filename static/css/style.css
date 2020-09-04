@@ -11,6 +11,57 @@
     background-color: #a71930 !important;
 }
 
+.dropdown-content {
+    width: 100%;
+    padding: 0px;
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: white;
+    list-style-type: none;
+}
+
+.dropdown-item:hover {
+    cursor: pointer;
+}
+
+#diffraction-container input[type=radio]:checked, #diffraction-container input[type=radio]:focus {
+    background-color: #00693c;
+    border: 0 none;
+}
+
+.noUi-tooltip {
+    display: none;
+}
+
+.noUi-handle:hover .noUi-tooltip, .noUi-handle:focus .noUi-tooltip {
+    display: block;
+}
+
+.noUi-connect {
+    background-color: #00693c;
+}
+
+#diffraction-container i {
+    font-size: 13px;
+    color: #A8A8A8;
+}
+
+#diffraction-container i:hover {
+    cursor: pointer;
+    color: #888888;
+}
+
+.button-column {
+    min-width: 130px;
+}
+
+.modal {
+    padding-right: 0 !important;
+    height: calc(100% - .5rem) !important;
+}
+
 .inversion-input, .equations-input {
     width: 30px;
 }
@@ -38,52 +89,6 @@
 
 .echelon-matrix tr:last-child td:last-child {
     border-bottom: 1px solid black;
-}
-
-.dropdown-content {
-    width: 100%;
-    padding: 0px;
-    position: absolute;
-    z-index: 1000;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    background-color: white;
-    list-style-type: none;
-}
-
-.dropdown-item:hover {
-    cursor: pointer;
-}
-
-#diffraction-container i {
-    font-size: 13px;
-    color: #A8A8A8;
-}
-
-#diffraction-container i:hover {
-    cursor: pointer;
-    color: #888888;
-}
-
-.noUi-tooltip {
-    display: none;
-}
-
-.noUi-handle:hover .noUi-tooltip, .noUi-handle:focus .noUi-tooltip {
-    display: block;
-}
-
-.noUi-connect {
-    background-color: #00693c;
-}
-
-.button-column {
-    min-width: 130px;
-}
-
-.modal {
-    padding-right: 0 !important;
-    height: calc(100% - .5rem) !important;
 }
 
 @media (min-width: 768px) {

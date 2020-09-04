@@ -54,11 +54,11 @@ class Mathematics:
 
     def calculate_intensities(self, calc):
         start_time = time.time()
-
-        lambda_length = 1.54 # angstrem
-        pi = 3.14
-        intensities = []
         
+        pi = 3.14
+        lambda_length = calc.lambda_length
+
+        intensities = []
         for _2_theta in range(int(calc.theta_2_min * 100), int(calc.theta_2_max * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
@@ -74,15 +74,12 @@ class Mathematics:
             for i in range(calc.n):
                 for j in range(calc.n_a):
                     xj_a = i * (calc.n_a * calc.element_a.dhkl + calc.m_b * calc.element_b.dhkl) + calc.element_a.dhkl * j
-                    # sum_a += np.exp(complex(0, 4 * pi * xj_a * s))
                     sum_a += (np.exp(-calc.w_a * math.pow(s, 2)) * calc.g_a * np.exp(complex(0, 4 * pi * xj_a * s)))
 
                 for j in range(calc.m_b):
                     xj_b = i * (calc.n_a * calc.element_a.dhkl + calc.m_b * calc.element_b.dhkl) + (calc.n_a * calc.element_a.dhkl) + (calc.element_b.dhkl * j)
-                    # sum_a += np.exp(complex(0, 4 * pi * xj_b * s))
                     sum_b += (np.exp(-calc.w_b * math.pow(s, 2)) * calc.g_b * np.exp(complex(0, 4 * pi * xj_b * s)))
 
-            # intensity = math.pow(abs(sum_a + sum_b), 2)
             intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
             intensities.append([_2_theta/100, intensity])
 

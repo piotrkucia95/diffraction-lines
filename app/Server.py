@@ -62,12 +62,19 @@ class Server:
             self.db.add_element(new_element)
             return 'Element added!'
 
-        @self.app.route('/diffraction-intensities', methods=['POST'])
+        @self.app.route('/calculations', methods=['POST'])
         def calculate_intensities():
             p = request.get_json()
-            el_a = Element('', '', p["dA"], '', p["elementAId"])
-            el_b = Element('', '', p["dB"], '', p["elementBId"])
-            calc = Calculation('', el_a, el_b, p["nA"], p["mB"], p["n"], p["wA"], p["wB"], p["gA"], p["gB"], p["theta2Min"], p["theta2Max"], False, None)
+            if p["advanced"] == False:
+                el_a = Element('', '', p["dA"], '', '')
+                el_b = Element('', '', p["dB"], '', '')
+                calc = Calculation('', False, el_a, el_b, p["nA"], p["mB"], p["n"], 0, 0, 1, 1, p["theta2Min"], p["theta2Max"], None, None, None, 1.54)
+            else:
+                el_a = Element('', '', p["dA"], '', p["elementAId"])
+                el_b = Element('', '', p["dB"], '', p["elementBId"])
+                calc = Calculation('', True, el_a, el_b, p["nA"], p["mB"], p["n"], p["wA"], p["wB"], p["gA"], p["gB"], 
+                                   p["theta2Min"], p["theta2Max"], None, p["dA"], p["dB"], p["lambda"])
+
             intensities_tuple = self.mathematics.calculate_intensities(calc)
             self.db.save_calculation(calc)
             return jsonify(

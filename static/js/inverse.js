@@ -35,7 +35,7 @@ var displayInverseResults = function(results, order) {
     var inverseHTML = '';
     if (order < 6) {
         inverseHTML = '<div id="echelon">Macierz odwrotna:'
-        inverseHTML += '<table class="echelon-matrix mt-2 mb-4">';
+        inverseHTML += '<table class="table-responsive echelon-matrix mt-2 mb-4">';
         for (let row of results.inverse) {
             inverseHTML += '<tr><td> </td>';
             for (column of row) {

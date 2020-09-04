@@ -25,6 +25,7 @@ var getIntensities = function() {
         jQuery('#diffraction-error').addClass('d-none');
         jQuery('#theta-range-error').addClass('d-none');
         sendIntensitiesRequest({
+            advanced     : false,
             elementAId   : elementAId,
             elementBId   : elementBId,
             dA           : +dA,
@@ -40,26 +41,6 @@ var getIntensities = function() {
             theta2Max    : +theta2Range[1]
         }, jQuery('#element-a-search').val(), jQuery('#element-b-search').val());
     }
-}
-
-var sendIntensitiesRequest = function(requestData, elA, elB) {
-    jQuery('#diffraction-spinner').removeClass('d-none');
-    jQuery.ajax({
-        url: '/diffraction-intensities', 
-        type: 'post', 
-        data: JSON.stringify(requestData), 
-        contentType : 'application/json'
-    })
-    .done((data) => {
-        clearChart();
-        renderDiffractionResults(data, [elA, elB, requestData.nA, requestData.mB, requestData.n]);
-    })
-    .fail((error) => {
-        console.log(error);
-    })
-    .always(() => {
-        jQuery('#diffraction-spinner').addClass('d-none');
-    });
 }
 
 var renderDiffractionResults = function(data, paramsList) {

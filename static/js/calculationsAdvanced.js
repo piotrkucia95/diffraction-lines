@@ -17,3 +17,15 @@ var dataTableColumns = [
     { title: "Data" },
     { title: "" }
 ];
+
+var showSelectedInputs = function(event) {
+    if (event.target.value === "dhkl") {
+        jQuery(".element-a-input").addClass('d-none');
+        jQuery(".element-b-input").addClass('d-none');
+        jQuery(".dhkl-inputs").removeClass('d-none');
+    } else if (event.target.value === "elements") {
+        jQuery(".element-a-input").removeClass('d-none');
+        jQuery(".element-b-input").removeClass('d-none');
+        jQuery(".dhkl-inputs").addClass('d-none');
+    } 
+}

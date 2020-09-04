@@ -11,6 +11,26 @@ var chartSubtitle = {
     fontSize: '24'            
 };
 
+var sendIntensitiesRequest = function(requestData, elA, elB) {
+    jQuery('#diffraction-spinner').removeClass('d-none');
+    jQuery.ajax({
+        url: '/calculations', 
+        type: 'post', 
+        data: JSON.stringify(requestData), 
+        contentType : 'application/json'
+    })
+    .done((data) => {
+        clearChart();
+        renderDiffractionResults(data, [elA, elB, requestData.nA, requestData.mB, requestData.n]);
+    })
+    .fail((error) => {
+        console.log(error);
+    })
+    .always(() => {
+        jQuery('#diffraction-spinner').addClass('d-none');
+    });
+}
+
 var handleSearch = function(event) {
     if (event.target.value.length > 1) {
         jQuery.ajax({url: '/elements?searchTerm=' + encodeURIComponent(event.target.value.split(' ')[0]), type: 'get'})
@@ -53,11 +73,7 @@ var selectCalcRow = function(calc) {
         jQuery('#na-input').val(calc[7]);
         jQuery('#mb-input').val(calc[8]);
         jQuery('#n-input').val(calc[9]);
-        jQuery('#wa-input').val(calc[10]);
-        jQuery('#wb-input').val(calc[11]);
-        jQuery('#ga-input').val(calc[12]);
-        jQuery('#gb-input').val(calc[13]);
-        var theta2Range = calc[14].split(' - ');
+        var theta2Range = calc[10].split(' - ');
         slider.noUiSlider.set([parseFloat(theta2Range[0]), parseFloat(theta2Range[1])]);
         $('.history-modal').modal('hide');
         renderDiffractionResults(data, [calc[5], calc[6], calc[7], calc[8], calc[9]]);
