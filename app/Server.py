@@ -65,15 +65,13 @@ class Server:
         @self.app.route('/calculations', methods=['POST'])
         def calculate_intensities():
             p = request.get_json()
+            el_a = Element('', '', p["dA"], '', p["elementAId"])
+            el_b = Element('', '', p["dB"], '', p["elementBId"])
             if p["advanced"] == False:
-                el_a = Element('', '', p["dA"], '', '')
-                el_b = Element('', '', p["dB"], '', '')
-                calc = Calculation('', False, el_a, el_b, p["nA"], p["mB"], p["n"], 0, 0, 1, 1, p["theta2Min"], p["theta2Max"], None, None, None, 1.54)
+                calc = Calculation('', False, el_a, el_b, p["nA"], p["mB"], p["n"], 0, 0, 1, 1, p["theta2Min"], p["theta2Max"], None, None, None, 1.54, 0)
             else:
-                el_a = Element('', '', p["dA"], '', p["elementAId"])
-                el_b = Element('', '', p["dB"], '', p["elementBId"])
                 calc = Calculation('', True, el_a, el_b, p["nA"], p["mB"], p["n"], p["wA"], p["wB"], p["gA"], p["gB"], 
-                                   p["theta2Min"], p["theta2Max"], None, p["dA"], p["dB"], p["lambda"])
+                                   p["theta2Min"], p["theta2Max"], None, p["dA"], p["dB"], p["lambda"], p["error"])
 
             intensities_tuple = self.mathematics.calculate_intensities(calc)
             self.db.save_calculation(calc)
@@ -84,7 +82,8 @@ class Server:
 
         @self.app.route('/calculations', methods=['GET'])
         def get_calculations():
-            results = self.db.get_calculations()
+            advanced = request.args.get('advanced')
+            results = self.db.get_calculations(advanced)
             return jsonify(results) 
 
         @self.app.route('/calculations/<id>', methods=['PATCH'])

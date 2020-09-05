@@ -1,11 +1,11 @@
 var dataTableColumns = [
     { title: "Id" },
-    { title: "A dhkl" },
-    { title: "B dhkl" },
     { title: "A Id" },
     { title: "B Id" },
     { title: "Pierwiastek A" },
     { title: "Pierwiastek B" },
+    { title: "d<sub>A</sub> [&#8491;]" },
+    { title: "d<sub>B</sub> [&#8491;]" },
     { title: "n<sub>A</sub>" },
     { title: "m<sub>B</sub>" },
     { title: "N" },
@@ -33,39 +33,24 @@ var getIntensities = function() {
             nA           : +nA,
             mB           : +mB,
             n            : +n,
-            wA           : +jQuery('#wa-input').val() || 0,
-            wB           : +jQuery('#wb-input').val() || 0,
-            gA           : +jQuery('#ga-input').val() || 1,
-            gB           : +jQuery('#gb-input').val() || 1,
             theta2Min    : +theta2Range[0],
             theta2Max    : +theta2Range[1]
         }, jQuery('#element-a-search').val(), jQuery('#element-b-search').val());
     }
 }
 
-var renderDiffractionResults = function(data, paramsList) {
-    createChart(data.intensities, [
-        paramsList[0] + ', ' + paramsList[1],
-        'nA = ' + paramsList[2] + ', mB = ' + paramsList[3] + ', N = ' + paramsList[4]
-    ]);
-    timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
-    jQuery('#diffraction-results').append(timeMessage);
-    jQuery('#y-scale-increase').removeAttr("disabled");
-    jQuery('#y-scale-decrease').removeAttr("disabled");
-}
-
 var getCalculations = function() {
     jQuery('#history').html('');
-    jQuery.ajax({ url: '/calculations', type: 'get' })
+    jQuery.ajax({ url: '/calculations?advanced=false', type: 'get' })
     .done((data) => {
         displayedData = [];
         data.forEach(calc => {
             var row = [
-                calc.id, calc["element_a"]["dhkl"], calc["element_b"]["dhkl"],calc["element_a"]["id"], 
-                calc["element_b"]["id"], calc["element_a"]["display_name"], calc["element_b"]["display_name"], 
+                calc.id,calc["element_a"]["id"], calc["element_b"]["id"], calc["element_a"]["display_name"], 
+                calc["element_b"]["display_name"], calc["element_a"]["dhkl"], calc["element_b"]["dhkl"], 
                 calc["n_a"], calc["m_b"], calc["n"], calc["theta_2_min"] + '&deg; - ' + calc["theta_2_max"] + '&deg;',  
                 new Date(calc["created_date"]).toLocaleDateString(),
-                `<div class="row button-column">
+                `<div class="row text-right buttons-column">
                     <button type="button" id="select" class="btn btn-sm btn-green">Wybierz</button>
                     <button type="button" id="delete" class="btn btn-sm btn-green ml-1">Usuń</button>
                 </div>`

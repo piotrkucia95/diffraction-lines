@@ -21,7 +21,7 @@ var sendIntensitiesRequest = function(requestData, elA, elB) {
     })
     .done((data) => {
         clearChart();
-        renderDiffractionResults(data, [elA, elB, requestData.nA, requestData.mB, requestData.n]);
+        renderDiffractionResults(data, [elA, elB, requestData]);
     })
     .fail((error) => {
         console.log(error);
@@ -29,6 +29,25 @@ var sendIntensitiesRequest = function(requestData, elA, elB) {
     .always(() => {
         jQuery('#diffraction-spinner').addClass('d-none');
     });
+}
+
+var renderDiffractionResults = function(data, paramsList) {
+    createChart(data.intensities, [
+        paramsList[0] != '-' && paramsList[1] != '-' 
+            ? paramsList[0] + ', ' + paramsList[1]
+            : 'dA = ' + paramsList[2].dA + '; ' + 'dB = ' + paramsList[2].dB + '; nA = ' + paramsList[2].nA + '; mB = ' + paramsList[2].mB + '; N = ' + paramsList[2].n,
+        paramsList[0] != '-' && paramsList[1] != '-' 
+            ? 'nA = ' + paramsList[2].nA + '; mB = ' + paramsList[2].mB + '; N = ' + paramsList[2].n
+            : '',
+        paramsList[2].wA || paramsList[2].wA == 0 && paramsList[2].wB || paramsList[2].wB == 0 && paramsList[2].gA || paramsList[2].gA == 0 && paramsList[2].gB || paramsList[2].gB == 0
+            ? 'WA = ' + paramsList[2].wA + '; WB = ' + paramsList[2].wB + '; gA = ' + paramsList[2].gA + '; gB = ' + paramsList[2].gB
+            : '',
+        paramsList[2].lambda ? '\u03BB = ' + paramsList[2].lambda + '; Błąd = ' + paramsList[2].error : ''
+    ]);
+    timeMessage = '<div id="diffraction-time" class="mt-3">Czas obliczeń: ' + data.time + 's.</div>';
+    jQuery('#diffraction-results').append(timeMessage);
+    jQuery('#y-scale-increase').removeAttr("disabled");
+    jQuery('#y-scale-decrease').removeAttr("disabled");
 }
 
 var handleSearch = function(event) {
@@ -40,6 +59,15 @@ var handleSearch = function(event) {
         .fail((error) => {
             console.log(error);
         })
+    } else if (event.target.value.length == 0) {
+        hideSearchResults(event.target.id);
+        if (event.target.id == 'element-a-search') {
+            dA = 0;
+            elementAId = '';
+        } else if (event.target.id == 'element-b-search') {
+            dB = 0;
+            elementBId = '';
+        }
     } else {
         hideSearchResults(event.target.id);
     }
@@ -50,33 +78,63 @@ var handleSearchResultsClick = function(event) {
     switch(event.currentTarget.dataset.parent) {
         case 'element-a-search':
             dA = event.currentTarget.dataset.dhkl;
+            if (jQuery('#da-input')) {
+                jQuery('#da-input').val(dA);
+            }
             elementAId = event.currentTarget.dataset.element;
             break;
         case 'element-b-search':
             dB = event.currentTarget.dataset.dhkl;
+            if (jQuery('#db-input')) {
+                jQuery('#db-input').val(dB);
+            }
             elementBId = event.currentTarget.dataset.element;
     }
     hideSearchResults(event.currentTarget.dataset.parent);
 }
 
+var addRowClickHandler = function() {
+    $('#history tbody').on('click', 'tr', function (event) {
+        var data = dataTable.row(this).data();
+        if (event.target.id == 'select') {
+            selectCalcRow(data);
+        } else if (event.target.id == 'delete') {
+            deleteCalcRow(data[0], this);
+        }
+    });
+}
+
 var selectCalcRow = function(calc) {
-    clearChart();
     jQuery('#history-spinner').removeClass('d-none');
     jQuery.ajax({ url: '/calculations/' + calc[0], type: 'patch' })
     .done((data) => {
-        dA = calc[1];
-        dB = calc[2];
-        elementAId = calc[3];
-        elementBId = calc[4];
-        jQuery('#element-a-search').val(calc[5]);
-        jQuery('#element-b-search').val(calc[6]);
-        jQuery('#na-input').val(calc[7]);
-        jQuery('#mb-input').val(calc[8]);
-        jQuery('#n-input').val(calc[9]);
-        var theta2Range = calc[10].split(' - ');
-        slider.noUiSlider.set([parseFloat(theta2Range[0]), parseFloat(theta2Range[1])]);
+        clearChart();
+        var params = {
+            elementAId  : calc[1],
+            elementBId  : calc[2],
+            elementA    : calc[3],
+            elementB    : calc[4],
+            dA          : calc[5],
+            dB          : calc[6],
+            nA          : calc[7],
+            mB          : calc[8],
+            n           : calc[9],
+            theta2Range : calc[10]
+        }
+        if (calc.length > 13) {
+            Object.assign(params, {
+                wA          : calc[10],
+                wB          : calc[11],
+                gA          : calc[12],
+                gB          : calc[13],
+                lambda      : calc[14],
+                error       : calc[15],
+                theta2Range : calc[16]
+            });
+        }
+        setInputs(calc, params);
         $('.history-modal').modal('hide');
-        renderDiffractionResults(data, [calc[5], calc[6], calc[7], calc[8], calc[9]]);
+        renderDiffractionResults(data, [calc[3], calc[4], params]);
     })
     .fail((error) => {
         console.log(error);
@@ -84,6 +142,30 @@ var selectCalcRow = function(calc) {
     .always(() => {
         jQuery('#history-spinner').addClass('d-none');
     })
+}
+
+var setInputs = function(row, params) {
+    elementAId = params.elementAId;
+    elementBId = params.elementBId;
+    dA = params.dA;
+    dB = params.dB;
+    jQuery('#element-a-search').val(params.elementA);
+    jQuery('#element-b-search').val(params.elementB);
+    jQuery('#na-input').val(params.nA);
+    jQuery('#mb-input').val(params.mB);
+    jQuery('#n-input').val(params.n);
+    if (row.length > 13) {
+        jQuery('#da-input').val(params.dA);
+        jQuery('#db-input').val(params.dB);
+        jQuery('#wa-input').val(params.wA);
+        jQuery('#wb-input').val(params.wB);
+        jQuery('#ga-input').val(params.gA);
+        jQuery('#gb-input').val(params.gB);
+        jQuery('#lambda-input').val(params.lambda);
+        jQuery('#error-input').val(params.error);
+    }
+    var theta2Range = params.theta2Range.split(' - ');
+    slider.noUiSlider.set([parseFloat(theta2Range[0]), parseFloat(theta2Range[1])]);
 }
 
 var deleteCalcRow = function(id, row) {
@@ -202,8 +284,8 @@ var createSlider = function() {
         },
         start: [20, 90],
         tooltips: true,
-        keyboardPageMultiplier: 100, // Default 5
-        keyboardDefaultStep: 18000, // Default 10
+        keyboardPageMultiplier: 100,
+        keyboardDefaultStep: 18000,
         connect: true,
     });
 }
@@ -233,7 +315,7 @@ var createDataTable = function(columns, data) {
         scrollY:        '57vh',
         scrollX:        '100%',
         aoColumnDefs: [{ 
-            bVisible: false, aTargets: [0, 1, 2, 3, 4]
+            bVisible: false, aTargets: [0, 1, 2]
         }, {
             orderable: false, aTargets: [data[0].length - 1], 
         }]
@@ -262,17 +344,6 @@ var showTooltip = function(event) {
 
 var hideTooltip = function(event) {
     $('#' + event.currentTarget.id).popover('hide');
-}
-
-var addRowClickHandler = function() {
-    $('#history tbody').on('click', 'tr', function (event) {
-        var data = dataTable.row(this).data();
-        if (event.target.id == 'select') {
-            selectCalcRow(data);
-        } else if (event.target.id == 'delete') {
-            deleteCalcRow(data[0], this);
-        }
-    });
 }
 
 var addCloseModalHandler = function() {

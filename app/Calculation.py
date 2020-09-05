@@ -1,7 +1,7 @@
 from element import Element
 
 class Calculation:
-    def __init__(self, id, advanced, element_a, element_b, n_a, m_b, n, w_a, w_b, g_a, g_b, t2_min, t2_max, date, d_a_custom, d_b_custom, lambda_length):
+    def __init__(self, id, advanced, element_a, element_b, n_a, m_b, n, w_a, w_b, g_a, g_b, t2_min, t2_max, date, d_a_custom, d_b_custom, lambda_length, error):
         self.id = id
         self.advanced = advanced
         self.element_a = element_a
@@ -19,3 +19,4 @@ class Calculation:
         self.d_a_custom = d_a_custom
         self.d_b_custom = d_b_custom
         self.lambda_length = lambda_length
+        self.standard_error = error

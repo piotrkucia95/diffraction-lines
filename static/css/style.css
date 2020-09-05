@@ -1,3 +1,20 @@
+body {
+    position: relative;
+    min-height: 100vh;
+}
+
+main {
+    padding-bottom: 3rem;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    min-height: 2.5rem;
+    font-size: .9rem;
+}
+
 .btn-green {
     background-color: #00693c;
     color: white;
@@ -5,6 +22,10 @@
 
 .btn-green:hover {
     color: #efefef;
+}
+
+.buttons-column {
+    min-width: 130px;
 }
 
 .canvasjs-chart-toolbar button:hover, .canvasjs-chart-toolbar div div:hover {
@@ -24,11 +45,6 @@
 
 .dropdown-item:hover {
     cursor: pointer;
-}
-
-#diffraction-container input[type=radio]:checked, #diffraction-container input[type=radio]:focus {
-    background-color: #00693c;
-    border: 0 none;
 }
 
 .noUi-tooltip {
@@ -51,10 +67,6 @@
 #diffraction-container i:hover {
     cursor: pointer;
     color: #888888;
-}
-
-.button-column {
-    min-width: 130px;
 }
 
 .modal {

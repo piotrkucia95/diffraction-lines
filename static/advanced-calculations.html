@@ -42,7 +42,8 @@
             </ul>
         </div>
     </nav>
-    <div id="diffraction-container" class="p-3">
+
+    <main id="diffraction-container" class="pt-3 pr-3 pl-3">
         <div class="row">
             <div class="col-md-6 col-sm-12 pb-2">
                 Wyznaczanie natężeń linii dyfrakcyjnych w modelu supersieci idealnej.
@@ -65,35 +66,35 @@
                         <option value="elements">Wybór pierwiasktów</option>
                     </select>
                 </div>
-                <div class="dhkl-inputs row">
+                <div id="dhkl-inputs" class="row">
                     <div class="col form-group">
                         <label for="da-input">
                             d<sub>A</sub>: <i class="fas fa-info-circle" id="d-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Odległość międzypłaszczyznowa pierwiastka A [&#8491;]." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
-                        <input type="number" min="0" step="0.0001" class="form-control" id="da-input"/>
+                        <input type="number" id="da-input" min="0" step="0.0001" class="form-control"/>
                     </div>
                     <div class="col form-group">
                         <label for="db-input">
                            d<sub>B</sub>: <i class="fas fa-info-circle" id="d-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Odległość międzypłaszczyznowa pierwiastka B [&#8491;]." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
-                        <input type="number" min="0" step="0.0001" class="form-control" id="db-input"/>
+                        <input type="number" id="db-input" min="0" step="0.0001" class="form-control"/>
                     </div>
                 </div>
-                <div class="element-a-input form-group d-none">
+                <div id="element-a-input" class="form-group d-none">
                     <div class="dropdown">
                         <label for="element-a-search">
                             Pierwiastek A: <i class="fas fa-info-circle" id="element-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Pierwiastek tworzący pierwszą warstwę powłoki (warstwę A)." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
-                        <input type="text" autocomplete="off" class="form-control" id="element-a-search" placeholder="Szukaj..." oninput="handleSearch(event)" onfocus="handleSearch(event)" onblur="handleSearchBlur(event)"/>
+                        <input type="search" id="element-a-search" autocomplete="off" class="form-control" placeholder="Szukaj..." oninput="handleSearch(event)" onfocus="handleSearch(event)" onblur="handleSearchBlur(event)"/>
                         <ul id="a-search-results" class="dropdown-content d-none" onmousedown="handleSearchResultsMouseDown()" onmouseup="handleSearchResultsMouseUp()"></ul>
                     </div>
                 </div>
-                <div class="element-b-input form-group d-none">
+                <div id="element-b-input" class="form-group d-none">
                     <div class="dropdown">
                         <label for="element-b-search">
                             Pierwiastek B: <i class="fas fa-info-circle" id="element-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Pierwiastek tworzący drugą warstwę powłoki (warstwę B)." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
-                        <input type="text" autocomplete="off" class="form-control" id="element-b-search" placeholder="Szukaj..." oninput="handleSearch(event)" onfocus="handleSearch(event)" onblur="handleSearchBlur(event)"/>
+                        <input type="search" id="element-b-search" autocomplete="off" class="form-control" placeholder="Szukaj..." oninput="handleSearch(event)" onfocus="handleSearch(event)" onblur="handleSearchBlur(event)"/>
                         <ul id="b-search-results" class="dropdown-content d-none" onmousedown="handleSearchResultsMouseDown()" onmouseup="handleSearchResultsMouseUp()"></ul>
                     </div>
                 </div>
@@ -113,6 +114,34 @@
                 </div>
                 <div class="row">
                     <div class="col form-group">
+                        <label for="wa-input">
+                            W<sub>A</sub>: <i class="fas fa-info-circle" id="w-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Współczynnik Debye-Wallera pierwiastka A. Domyślna wartość: 0." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" id="wa-input" class="form-control" value="0" step="0.01"/>
+                    </div>
+                    <div class="col form-group">
+                        <label for="wb-input">
+                            W<sub>B</sub>: <i class="fas fa-info-circle" id="w-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Współczynnik Debye-Wallera pierwiastka B. Domyślna wartość: 0." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" id="wb-input" class="form-control" value="0" step="0.01"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label for="ga-input">
+                            g<sub>A</sub>: <i class="fas fa-info-circle" id="g-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="gA. Domyślna wartość: 1." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" id="ga-input"class="form-control" value="1" step="0.01"/>
+                    </div>
+                    <div class="col form-group">
+                        <label for="gb-input">
+                            g<sub>B</sub>: <i class="fas fa-info-circle" id="g-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="gB. Domyślna wartość: 1." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        </label>
+                        <input type="number" id="gb-input"class="form-control" value="1" step="0.01"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col form-group">
                         <label for="n-input">
                             N: <i class="fas fa-info-circle" id="n-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Liczba powtórzeń warstw A i B w powłoce." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
@@ -122,35 +151,13 @@
                         <label for="lambda-input">
                             &lambda;: <i class="fas fa-info-circle" id="lambda-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Długość fali promieniowania rentgenowskiego [&#8491;]. Domyślna wartość: 1,54." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
-                        <input type="number" min="0" step="0.01" class="form-control" id="lambda-input"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col form-group">
-                        <label for="wa-input">
-                            W<sub>A</sub>: <i class="fas fa-info-circle" id="w-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Współczynnik Debye-Wallera pierwiastka A. Domyślna wartość: 0." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                        </label>
-                        <input type="number" id="wa-input" class="form-control" value="0"/>
+                        <input type="number" id="lambda-input" min="0" step="0.01" class="form-control" value="1.54"/>
                     </div>
                     <div class="col form-group">
-                        <label for="wb-input">
-                            W<sub>B</sub>: <i class="fas fa-info-circle" id="w-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Współczynnik Debye-Wallera pierwiastka B. Domyślna wartość: 0." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
+                        <label for="error-input">
+                            Błąd: <i class="fas fa-info-circle" id="error-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Przedział błędu obliczeń [%]." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
                         </label>
-                        <input type="number" id="wb-input" class="form-control" value="0"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col form-group">
-                        <label for="ga-input">
-                            g<sub>A</sub>: <i class="fas fa-info-circle" id="g-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="gA. Domyślna wartość: 1." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                        </label>
-                        <input type="number" id="ga-input"class="form-control" value="1"/>
-                    </div>
-                    <div class="col form-group">
-                        <label for="gb-input">
-                            g<sub>B</sub>: <i class="fas fa-info-circle" id="g-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="gB. Domyślna wartość: 1." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                        </label>
-                        <input type="number" id="gb-input"class="form-control" value="1"/>
+                        <input type="number" id="error-input" min="0" step="0.01" class="form-control" value="0"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -194,7 +201,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <footer class="bg-light text-center p-2">
+        Wyznaczanie natężeń lini dyfrakcyjnych. Wykonano na potrzeby pracy magisterskiej. Piotr Kucia, Kraków 2020
+    </footer>
 
     <script src="js/lib/jquery-3.5.1.min.js"></script>
     <script src="js/lib/canvasjs.min.js"></script>
