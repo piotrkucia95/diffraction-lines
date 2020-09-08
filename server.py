@@ -2,6 +2,7 @@ from calc import Math
 from flask import Flask, jsonify, request
 import os
 import json 
+import psycopg2
 
 with open('data/interplanar-distances.json', encoding='utf-8') as f:
     interplanar_distances = json.load(f)
