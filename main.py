@@ -1,24 +1,35 @@
-from calc import Math
+from mathematics import Mathematics
+from database import Database
+from element import Element
+from calculation import Calculation
 from flask import Flask, jsonify, request
 import os
-import json 
-
-with open('data/interplanar-distances.json', encoding='utf-8') as f:
-    interplanar_distances = json.load(f)
-
 
 app = Flask(__name__, static_url_path='')
 
-math = Math()
+mathematics = Mathematics()
+db = Database()
 
 @app.route('/')
-def index():
+def send_index():
     return app.send_static_file('index.html')
+
+@app.route('/basic-calculations')
+def send_basic_calculations():
+    return app.send_static_file('basic-calculations.html')
+
+@app.route('/advanced-calculations')
+def send_advanced_calculations():
+    return app.send_static_file('advanced-calculations.html')
+
+@app.route('/matrix-inversion')
+def send_matrix_inversion():
+    return app.send_static_file('matrix-inversion.html')
 
 @app.route('/matrix-inverse/gauss/<order>')
 def matrix_inverse_gauss(order):
-    matrix = math.create_matrix(int(order))
-    inverse_tuple = math.inverse_gauss(matrix)
+    matrix = mathematics.create_matrix(int(order))
+    inverse_tuple = mathematics.inverse_gauss(matrix)
     return jsonify(
         inverse=inverse_tuple[0] if int(order) <= 10 else [],
         time=inverse_tuple[1]
@@ -26,34 +37,60 @@ def matrix_inverse_gauss(order):
 
 @app.route('/matrix-inverse/numpy/<order>')
 def matrix_inverse_numpy(order):
-    matrix = math.create_matrix(int(order))
-    inverse_tuple = math.inverse_numpy(matrix)
+    matrix = mathematics.create_matrix(int(order))
+    inverse_tuple = mathematics.inverse_numpy(matrix)
     return jsonify(
         inverse=inverse_tuple[0] if int(order) <= 10 else [],
         time=inverse_tuple[1]
     )
 
-@app.route('/diffraction-intensities')
+@app.route('/elements', methods=['GET'])
+def get_element():
+    search_term = request.args.get('searchTerm')
+    results = db.search_elements(search_term)
+    return jsonify(results)
+
+@app.route('/elements', methods=['POST'])
+def add_element():
+    p = request.get_json()
+    new_element = Element(p["name"], p["symbol"], p["dhkl"], p["displayName"], '')
+    db.add_element(new_element)
+    return 'Element added!'
+
+@app.route('/calculations', methods=['POST'])
 def calculate_intensities():
-    d_a = float(request.args.get('dA'))
-    d_b = float(request.args.get('dB'))
-    n_a = int(request.args.get('nA'))
-    m_b = int(request.args.get('mB'))
-    n = int(request.args.get('N'))
-    theta_2_min = round(float(request.args.get('2ThetaMin')), 2)
-    theta_2_max = round(float(request.args.get('2ThetaMax')), 2)
-    y_scale = int(request.args.get('yScale'))
-    intensities_tuple = math.calculate_intensities(d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale)
+    p = request.get_json()
+    el_a = Element('', '', p["dA"], '', p["elementAId"])
+    el_b = Element('', '', p["dB"], '', p["elementBId"])
+    if p["advanced"] == False:
+        calc = Calculation('', False, el_a, el_b, p["nA"], p["mB"], p["n"], 0, 0, 1, 1, p["theta2Min"], p["theta2Max"], None, None, None, 1.54, 0)
+    else:
+        calc = Calculation('', True, el_a, el_b, p["nA"], p["mB"], p["n"], p["wA"], p["wB"], p["gA"], p["gB"], 
+                            p["theta2Min"], p["theta2Max"], None, p["dA"], p["dB"], p["lambda"], p["error"])
+
+    intensities_tuple = mathematics.calculate_intensities(calc)
+    db.save_calculation(calc)
     return jsonify(
         intensities=intensities_tuple[0],
         time=intensities_tuple[1]
     )
 
-@app.route('/elements')
-def get_element():
-    search_term = request.args.get('searchTerm').lower()
-    result = {}
-    for key in interplanar_distances.keys():
-        if search_term in key.lower():
-            result[key] = interplanar_distances[key]
-    return jsonify(result)
+@app.route('/calculations', methods=['GET'])
+def get_calculations():
+    advanced = request.args.get('advanced')
+    results = db.get_calculations(advanced)
+    return jsonify(results) 
+
+@app.route('/calculations/<id>', methods=['PATCH'])
+def update_calculation(id):
+    calc = db.update_calculation(id)
+    intensities_tuple = mathematics.calculate_intensities(calc)
+    return jsonify(
+        intensities=intensities_tuple[0],
+        time=intensities_tuple[1]
+    )
+
+@app.route('/calculations/<id>', methods=['DELETE'])
+def delete_calculation(id):
+    db.delete_calculation(id)
+    return 'Calculation removed!'
