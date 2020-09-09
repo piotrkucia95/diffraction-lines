@@ -3,145 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chmury obliczeniowe</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <title>Wyznaczanie natężeń linii dyfrakcyjnych</title>
 
     <link rel="stylesheet" href="css/lib/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/lib/jquery.dataTables.min.css"/>
     <link rel="stylesheet" href="css/lib/nouislider.min.css"/>
     <link rel="stylesheet" href="css/lib/fontawesome/css/all.min.css"/>
     <link rel="stylesheet" href="css/style.css"/>
 
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
-<body class="p-4">
-    <div class="page-header pb-2">
-        <h4>Wykorzystanie chmur obliczeniowych do wyznaczania natężeń linii dyfrakcyjnych.</h4>
-    </div>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            <img src="img/agh.png" width="17" height="32" class="d-inline-block align-top" alt="">
+            <span class="d-none d-sm-inline-block">&nbsp;Wyznaczanie natężeń linii dyfrakcyjnych</span>
+        </a>
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="diffraction-tab" data-toggle="tab" href="#diffraction-panel" role="tab" aria-controls="diffraction-panel" aria-selected="false">Wyznaczanie natężeń linii dyfrakcyjnych</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="inversion-tab" data-toggle="tab" href="#inversion-panel" role="tab" aria-controls="inversion-panel" aria-selected="true">Obliczanie macierzy odwrotnej</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="diffraction-panel" role="tabpanel" aria-labelledby="diffraction-tab">
-            <div id="diffraction-container" class="pt-2">
-                <div class="row">
-                    <div class="col-md-6 col-sm-12 pt-2 pb-2">
-                        Wyznaczanie natężeń linii dyfrakcyjnych w modelu supersieci idealnej.
-                    </div>
-                    <div class="col-md-6 col-sm-12 pt-2 pb-2 text-right">
-                        <div id="diffraction-spinner" class="spinner-border spinner-border-sm mr-2 d-none" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        <button id="intensities-button" class="btn btn-primary btn-sm" onclick="getIntensities();">Generuj wykres</button>
-                        <button id="clear-chart-button" class="btn btn-primary btn-sm" onclick="clearChart();">Wyczyść</button>
-                    </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/basic-calculations">Obliczenia podstawowe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/advanced-calculations">Obliczenia zaawansowane</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/matrix-inversion">Odwracanie macierzy</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="diffraction-container" class="pt-md-5 pr-md-5 pl-md-5 pt-4 pr-4 pl-4">
+        Aplikacja służy do wyznaczania natężeń linii dyfrakcyjnych w rentgenowskiej analizie strukturalnej sztucznych supersieci metalicznych AMS.
+        Supersieci te zbudowane są z naprzemiennie ułożonych warstw metali. Intesywność wiązki jest mierzona dla różnych kątów dyfrakcji 2θ 
+        i zwracana w postaci wykresu zależności natężęnia linii dyfrakcyjnej od kąta 2θ.</p>
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-4 pb-2 text-center">
+                <img id="ams-image" src="img/ams.png">
+                <div class="p-3">Rys. Schemat budowy sztucznej supersieci metalicznej AMS.</div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-8 pb-2">
+                <div>Do obliczania intensywności wiązki ugiętej wykorzystywany jest wzór Schulera:</div>
+                <div class="text-center pt-3 pb-3">
+                    <img src="img/schuler.png" height="110px"/>
                 </div>
-                <div class="pt-2 row">
-                    <div class="col-md-3 col-sm-12">
-                        <div class="form-group">
-                            <div class="dropdown">
-                                <label for="element-a-search">
-                                    Pierwiastek A: <i class="fas fa-info-circle" id="element-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Pierwiastek tworzący pierwszą warstwę powłoki (warstwę A)." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                                </label>
-                                <input type="text" autocomplete="off" class="form-control" id="element-a-search" placeholder="Szukaj..." oninput="handleSearch(event)" onfocus="handleSearch(event)" onblur="handleSearchBlur(event)"/>
-                                <ul id="a-search-results" class="dropdown-content d-none" onmousedown="handleSearchResultsMouseDown()" onmouseup="handleSearchResultsMouseUp()"></ul>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="dropdown">
-                                <label for="element-b-search">
-                                    Pierwiastek B: <i class="fas fa-info-circle" id="element-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Pierwiastek tworzący drugą warstwę powłoki (warstwę B)." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                                </label>
-                                <input type="text" autocomplete="off" class="form-control" id="element-b-search" placeholder="Szukaj..." oninput="handleSearch(event)" onfocus="handleSearch(event)" onblur="handleSearchBlur(event)"/>
-                                <ul id="b-search-results" class="dropdown-content d-none" onmousedown="handleSearchResultsMouseDown()" onmouseup="handleSearchResultsMouseUp()"></ul>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col form-group">
-                                <label for="na-input">
-                                    n<sub>A</sub>: <i class="fas fa-info-circle" id="n-a-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Ilość przestrzeni krystalograficznych pierwiastka A w pierwszej warstwie powłoki." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                                </label>
-                                <input type="number" min="1" class="form-control" id="na-input"/>
-                            </div>
-                            <div class="col form-group">
-                                <label for="mb-input">
-                                    m<sub>B</sub>: <i class="fas fa-info-circle" id="m-b-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Ilość przestrzeni krystalograficznych pierwiastka B w drugiej warstwie powłoki." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                                </label>
-                                <input type="number" min="1" class="form-control" id="mb-input"/>
-                            </div>
-                            <div class="col form-group">
-                                <label for="n-input">
-                                    N: <i class="fas fa-info-circle" id="n-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Liczba powtórzeń warstw A i B w powłoce." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                                </label>
-                                <input type="number" min="1" class="form-control" id="n-input"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="2-theta-slider">
-                                Zakres 2θ: <i class="fas fa-info-circle" id="theta-range-info" data-container="body" data-toggle="popover" data-placement="top" data-content="Zakres kąta dyfrakcji 2θ (0&deg; - 180&deg;). Użyj klawiszy Page Up i Page Down oraz strzałek, aby wyznaczyć dokładne wartości." onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)"></i>
-                            </label>
-                            <div id="2-theta-slider"></div>
-                        </div>
-                        <div class="form-group pt-3">
-                            <label for="y-scale-input">
-                                Skala intensywości:
-                            </label>
-                            <div id="y-scale-input" class="float-right" role="group" aria-label="Basic example">
-                                <button id="y-scale-increase" type="button" class="btn btn-primary btn-sm" disabled onclick="increaseYScale()">+</button>
-                                <button id="y-scale-decrease" type="button" class="btn btn-primary btn-sm" disabled onclick="decreaseYScale()">-</button>
-                            </div>
-                        </div>
-                        <div id="diffraction-error" class="form-group text-danger d-none">Wprowadź wszystkie wartości.</div>
-                    </div>
-                    <div class="col-md-9 col-sm-12">
-                        <div id="diffraction-results" class="w-100 p-2">
-                            <div id="chartContainer" class="chart" style="height: 400px; width: 100%;"></div>
-                        </div>
-                    </div>
+                <div class="pb-5">
+                    Aplikacja umożliwia 2 sposoby wykonywania obliczeń - podstawowy i zaawansowany. 
+                    W trybie podstawowym użytkownik może dostosować tylko najważniejsze parametry obliczeń, takie jak pierwiastki chemiczne, 
+                    z których złożona jest analizowana supersieć, ilość przestrzeni krystalograficznych składających się na poszczególne warstwy 
+                    (n<sub>A</sub> i m<sub>B</sub>), ilość ich powtórzeń (N) oraz zakres kąta dyfrakcji 2θ. 
+                    W trybie zaawansowanym użytkownik może dodatkowo zdecydować, czy chce skorzystać z dostępnych w bazie pierwiastków, 
+                    czy wpisać wartości d<sub>hkl</sub> ręcznie, określić wartości współczynników Debye'a-Wallera (W<sub>A</sub> i W<sub>B</sub>), 
+                    określić wartości funkcji rozpraszania (g<sub>A</sub> i g<sub>B</sub>), zdefiniować długość fali promieniowania rentgenowskiego 
+                    (&lambda;) oraz sprecyzować procentowy przedział błędu obliczeń. Dla obu trybów dostępna jest możliwość dopasowania skali uzyskanych
+                    natężeń do własnych potrzeb.
+                </div>
+                <div class="pb-5">
+                    Dodatkową funkcją aplikacji jest wykonywanie operacji odwracania macierzy, zrealizowane w ramach osobnej części pracy magisterskiej.
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="inversion-panel" role="tabpanel" aria-labelledby="inversion-tab">
-            <div id="inversion-container" class="pt-2">
-                <div class="row">
-                    <div class="col-md-6 col-sm-12 pt-2 pb-2">
-                        Obliczanie macierzy odwrotnej względem macierzy diagonalnie dominującej zadanego stopnia.
-                    </div>
-                    <div class="col-md-6 col-sm-12 pt-2 pb-2 text-right">
-                        <div id="inverse-spinner" class="spinner-border spinner-border-sm mr-2 d-none" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        <button id="inverse-gauss-button" class="btn btn-primary btn-sm m-1" onclick="inverseGauss();">Oblicz metodą Gaussa-Jordana</button>
-                        <button id="inverse-numpy-button" class="btn btn-primary btn-sm m-1" onclick="inverseNumPy();">Oblicz biblioteką NumPy</button>
-                        <button id="clear-button" class="btn btn-primary btn-sm m-1" onclick="clearPanel();">Wyczyść</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-4">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12">
-                            <div class="form-group">
-                                <label for="order-input">Stopień macierzy:</label>
-                                <input type="number" min="1" class="form-control" id="order-input" >
-                            </div>
-                        </div>
-                    </div>
-                    <span id="order-error" class="error text-danger"></span>
-                </div>
-            </div>
-        </div>
-    </div>
+    </main>
 
-    <script src="js/lib/jquery-3.5.0.min.js"></script>
-    <script src="js/lib/canvasjs.min.js"></script>
+    <footer class="bg-light text-center p-2">
+        Wyznaczanie natężeń linii dyfrakcyjnych. Wykonano na potrzeby pracy magisterskiej. Piotr Kucia, Kraków 2020
+    </footer>
+
+    <script src="js/lib/jquery-3.5.1.min.js"></script>
     <script src="js/lib/popper.min.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
-    <script src="js/lib/nouislider.min.js"></script>
-    <script src="js/helper.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,9 +1,12 @@
+from element import Element
+from calculation import Calculation
 import numpy as np
 import math
 import time 
 import sys
+import random
 
-class Math:
+class Mathematics:
     def create_matrix(self, order):
         matrix = [[(order + 1 if x == y else 1) for x in range(order)] for y in range(order)]
         return matrix
@@ -50,20 +53,14 @@ class Math:
         end_time = time.time()
         return (inverse, (end_time - start_time))
 
-    def calculate_intensities(self, d_a, d_b, n_a, m_b, n, theta_2_min, theta_2_max, y_scale):
+    def calculate_intensities(self, calc):
         start_time = time.time()
-
-        l = n_a * d_a + d_b * m_b
-        w = n * l
-        w_a = 0
-        w_b = 0
-        g_a = 1
-        g_b = 1
-        pi = 3.14
-        lambda_length = 1.54 # angstrem
+        
+        d_a = calc.element_a.dhkl if calc.element_a.dhkl != None else calc.d_a_custom
+        d_b = calc.element_b.dhkl if calc.element_b.dhkl != None else calc.d_b_custom
 
         intensities = []
-        for _2_theta in range(int(theta_2_min * 100), int(theta_2_max * 100) + 1):
+        for _2_theta in range(int(calc.theta_2_min * 100), int(calc.theta_2_max * 100) + 1):
             rad_2_theta = math.radians(_2_theta / 100)
             sin_2_theta = math.sin(rad_2_theta)
             cos_2_theta = math.cos(rad_2_theta)
@@ -71,23 +68,22 @@ class Math:
             rad_theta = math.radians(_2_theta / 200)
             sin_theta = math.sin(rad_theta)
 
-            s = sin_theta / lambda_length
+            s = sin_theta / calc.lambda_length
             
             sum_a = 0
             sum_b = 0
-            for i in range(n):
-                for j in range(n_a):
-                    xj_a = i * (n_a*d_a + m_b*d_b) + d_a * j
-                    # sum_a += np.exp(complex(0, 4 * pi * xj_a * s))
-                    sum_a += (np.exp(-w_a * math.pow(s, 2)) * g_a * np.exp(complex(0, 4 * pi * xj_a * s)))
+            for i in range(calc.n):
+                for j in range(calc.n_a):
+                    xj_a = i * (calc.n_a * d_a + calc.m_b * d_b) + d_a * j
+                    sum_a += (np.exp(-calc.w_a * math.pow(s, 2)) * calc.g_a * np.exp(complex(0, 4 * math.pi * xj_a * s)))
 
-                for j in range(m_b):
-                    xj_b = i * (n_a*d_a + m_b*d_b) + (n_a * d_a) + (d_b * j)
-                    # sum_a += np.exp(complex(0, 4 * pi * xj_b * s))
-                    sum_b += (np.exp(-w_b * math.pow(s, 2)) * g_b * np.exp(complex(0, 4 * pi * xj_b * s)))
+                for j in range(calc.m_b):
+                    xj_b = i * (calc.n_a * d_a + calc.m_b * d_b) + (calc.n_a * d_a) + (d_b * j)
+                    sum_b += (np.exp(-calc.w_b * math.pow(s, 2)) * calc.g_b * np.exp(complex(0, 4 * math.pi * xj_b * s)))
 
-            # intensity = math.pow(abs(sum_a + sum_b), 2)
             intensity = ((1 + math.pow(cos_2_theta, 2)) / (sin_theta * sin_2_theta)) * math.pow(abs(sum_a + sum_b), 2) if (sin_theta * sin_2_theta) != 0 else 0
+            error = random.uniform(-calc.standard_error, calc.standard_error)
+            intensity *= ((100 + error) / 100)
             intensities.append([_2_theta/100, intensity])
 
         end_time = time.time()
