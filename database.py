@@ -7,13 +7,23 @@ from configparser import ConfigParser
 import os
 
 class Database:
-    def __init__(self):
-        db_user = os.environ.get('CLOUD_SQL_USERNAME')
-        db_password = os.environ.get('CLOUD_SQL_PASSWORD')
-        db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
-        db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
-        unix_socket = '/cloudsql/{}'.format(db_connection_name)
-        self.conn = psycopg2.connect(database=db_name, user=db_user, password=db_password, host=unix_socket)
+    def __init__(self):  
+        params = self.config()
+        self.conn = psycopg2.connect(**params)
+
+    def config(self, filename='database.ini', section='postgresql'):
+        parser = ConfigParser()
+        parser.read(filename)
+
+        db = {}
+        if parser.has_section(section):
+            params = parser.items(section)
+            for param in params:
+                db[param[0]] = param[1]
+        else:
+            raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+
+        return db
 
     def search_elements(self, search_term):
         query = 'SELECT * FROM elements WHERE LOWER(display_name) LIKE LOWER(%s)'
