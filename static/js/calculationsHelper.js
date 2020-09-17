@@ -33,10 +33,10 @@ var sendIntensitiesRequest = function(requestData, elA, elB) {
 
 var renderDiffractionResults = function(data, paramsList) {
     createChart(data.intensities, [
-        paramsList[0] != '-' && paramsList[1] != '-' 
+        !paramsList.includes('-') && !paramsList.includes('')
             ? paramsList[0] + ', ' + paramsList[1]
             : 'dA = ' + paramsList[2].dA + '; ' + 'dB = ' + paramsList[2].dB + '; nA = ' + paramsList[2].nA + '; mB = ' + paramsList[2].mB + '; N = ' + paramsList[2].n,
-        paramsList[0] != '-' && paramsList[1] != '-' 
+        !paramsList.includes('-') && !paramsList.includes('')
             ? 'nA = ' + paramsList[2].nA + '; mB = ' + paramsList[2].mB + '; N = ' + paramsList[2].n
             : '',
         paramsList[2].wA || paramsList[2].wA == 0 && paramsList[2].wB || paramsList[2].wB == 0 && paramsList[2].gA || paramsList[2].gA == 0 && paramsList[2].gB || paramsList[2].gB == 0

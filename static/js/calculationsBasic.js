@@ -15,24 +15,27 @@ var dataTableColumns = [
 ];
 
 var getIntensities = function() {
-    var nA = jQuery('#na-input').val();
-    var mB = jQuery('#mb-input').val();
-    var n = jQuery('#n-input').val();
+    var nA = +jQuery('#na-input').val();
+    var mB = +jQuery('#mb-input').val();
+    var n = +jQuery('#n-input').val();
     var theta2Range = slider.noUiSlider.get();
     if (!dA || !dB || !nA || !mB || !n) {
+        jQuery('#diffraction-error').text('Wprowadź wszystkie wartości.');
+        jQuery('#diffraction-error').removeClass('d-none');
+    } else if (!Number.isInteger(nA) || !Number.isInteger(mB) || !Number.isInteger(n)) {
+        jQuery('#diffraction-error').text('Wprowadź poprawne wartości.');
         jQuery('#diffraction-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
-        jQuery('#theta-range-error').addClass('d-none');
         sendIntensitiesRequest({
             advanced     : false,
             elementAId   : elementAId,
             elementBId   : elementBId,
             dA           : +dA,
             dB           : +dB,
-            nA           : +nA,
-            mB           : +mB,
-            n            : +n,
+            nA           : nA,
+            mB           : mB,
+            n            : n,
             theta2Min    : +theta2Range[0],
             theta2Max    : +theta2Range[1]
         }, jQuery('#element-a-search').val(), jQuery('#element-b-search').val());

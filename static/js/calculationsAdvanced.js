@@ -39,34 +39,37 @@ var getIntensities = function() {
         elementAId = '';
         elementBId = '';
     } 
-    var nA = jQuery('#na-input').val();
-    var mB = jQuery('#mb-input').val();
+    var nA = +jQuery('#na-input').val();
+    var mB = +jQuery('#mb-input').val();
     var wA = jQuery('#wa-input').val();
     var wB = jQuery('#wb-input').val();
     var gA = jQuery('#ga-input').val();
     var gB = jQuery('#gb-input').val();
-    var n = jQuery('#n-input').val();
+    var n = +jQuery('#n-input').val();
     var error = jQuery('#error-input').val();
     var lambda = jQuery('#lambda-input').val();
     var theta2Range = slider.noUiSlider.get();
     if (!dA || !dB || !nA || !mB || !n || !wA || !wB || !gA || !gB || !lambda) {
+        jQuery('#diffraction-error').text('Wprowadź wszystkie wartości.');
+        jQuery('#diffraction-error').removeClass('d-none');
+    } else if (!Number.isInteger(nA) || !Number.isInteger(mB) || !Number.isInteger(n)) {
+        jQuery('#diffraction-error').text('Wprowadź poprawne wartości.');
         jQuery('#diffraction-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
-        jQuery('#theta-range-error').addClass('d-none');
         sendIntensitiesRequest({
             advanced     : true,
             elementAId   : elementAId,
             elementBId   : elementBId,
             dA           : +dA,
             dB           : +dB,
-            nA           : +nA,
-            mB           : +mB,
+            nA           : nA,
+            mB           : mB,
             wA           : +wA,
             wB           : +wB,
             gA           : +gA,
             gB           : +gB,
-            n            : +n,
+            n            : n,
             error        : +error,
             lambda       : +lambda,
             theta2Min    : +theta2Range[0],
@@ -87,8 +90,8 @@ var getCalculations = function() {
                 calc["element_b"]["display_name"] ? calc["element_b"]["display_name"] : '-',
                 calc["element_a"]["dhkl"] ? calc["element_a"]["dhkl"] : calc['d_a_custom'], 
                 calc["element_b"]["dhkl"] ? calc["element_b"]["dhkl"] : calc['d_b_custom'], 
-                calc["n_a"], calc["m_b"], calc["w_a"], calc["w_b"], calc["g_a"], 
-                calc["g_b"], calc["n"], calc["lambda_length"], calc["standard_error"],
+                calc["n_a"], calc["m_b"], calc["n"], calc["w_a"], calc["w_b"], calc["g_a"], 
+                calc["g_b"], calc["lambda_length"], calc["standard_error"],
                 calc["theta_2_min"] + '&deg; - ' + calc["theta_2_max"] + '&deg;',  
                 new Date(calc["created_date"]).toLocaleDateString(),
                 `<div class="row text-right buttons-column">
