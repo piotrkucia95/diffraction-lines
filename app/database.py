@@ -99,6 +99,7 @@ class Database:
         cur.execute(query, (datetime.datetime.now(), id))
         r = cur.fetchone()
         cur.close()
+        conn.commit()
         conn.close()
 
         el_a = Element(r[18], r[19], r[20], r[21], r[22])
@@ -113,4 +114,5 @@ class Database:
         cur = conn.cursor()
         cur.execute(query, (str(id),))
         cur.close()
+        conn.commit()
         conn.close()
