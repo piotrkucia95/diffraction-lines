@@ -15,24 +15,27 @@ var dataTableColumns = [
 ];
 
 var getIntensities = function() {
-    var nA = jQuery('#na-input').val();
-    var mB = jQuery('#mb-input').val();
-    var n = jQuery('#n-input').val();
+    var nA = +jQuery('#na-input').val();
+    var mB = +jQuery('#mb-input').val();
+    var n = +jQuery('#n-input').val();
     var theta2Range = slider.noUiSlider.get();
     if (!dA || !dB || !nA || !mB || !n) {
+        jQuery('#diffraction-error').text('Wprowadź wszystkie wartości.');
+        jQuery('#diffraction-error').removeClass('d-none');
+    } else if (!Number.isInteger(nA) || !Number.isInteger(mB) || !Number.isInteger(n)) {
+        jQuery('#diffraction-error').text('Wprowadź poprawne wartości.');
         jQuery('#diffraction-error').removeClass('d-none');
     } else {
         jQuery('#diffraction-error').addClass('d-none');
-        jQuery('#theta-range-error').addClass('d-none');
         sendIntensitiesRequest({
             advanced     : false,
             elementAId   : elementAId,
             elementBId   : elementBId,
             dA           : +dA,
             dB           : +dB,
-            nA           : +nA,
-            mB           : +mB,
-            n            : +n,
+            nA           : nA,
+            mB           : mB,
+            n            : n,
             theta2Min    : +theta2Range[0],
             theta2Max    : +theta2Range[1]
         }, jQuery('#element-a-search').val(), jQuery('#element-b-search').val());
@@ -45,11 +48,12 @@ var getCalculations = function() {
     .done((data) => {
         displayedData = [];
         data.forEach(calc => {
+            var d = new Date(calc["created_date"]);
             var row = [
                 calc.id,calc["element_a"]["id"], calc["element_b"]["id"], calc["element_a"]["display_name"], 
                 calc["element_b"]["display_name"], calc["element_a"]["dhkl"], calc["element_b"]["dhkl"], 
                 calc["n_a"], calc["m_b"], calc["n"], calc["theta_2_min"] + '&deg; - ' + calc["theta_2_max"] + '&deg;',  
-                new Date(calc["created_date"]).toLocaleDateString(),
+                ("0" + d.getDate()).slice(-2) + '.' +  ("0" + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear(),
                 `<div class="row text-right buttons-column">
                     <button type="button" id="select" class="btn btn-sm btn-green">Wybierz</button>
                     <button type="button" id="delete" class="btn btn-sm btn-green ml-1">Usuń</button>
