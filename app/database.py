@@ -7,8 +7,7 @@ from configparser import ConfigParser
 
 class Database:
     def __init__(self):  
-        params = self.config()
-        self.conn = psycopg2.connect(**params)
+        self.params = self.config()
 
     def config(self, filename='database.ini', section='postgresql'):
         parser = ConfigParser()
@@ -27,10 +26,12 @@ class Database:
     def search_elements(self, search_term):
         query = 'SELECT * FROM elements WHERE LOWER(display_name) LIKE LOWER(%s)'
         search_term = '%' + search_term + '%'
-        cur = self.conn.cursor()
+        conn = psycopg2.connect(**self.params)
+        cur = conn.cursor()
         cur.execute(query, (search_term,))
         results = cur.fetchall()
         cur.close()
+        conn.close()
         elements = []
         for r in results:
             element = Element(r[0], r[1], r[2], r[3], r[4])
@@ -41,20 +42,24 @@ class Database:
         query = """ INSERT INTO elements(name, symbol, dhkl, display_name, id) 
                     VALUES (%s, %s, %s, %s, %s) """
         el_id = uuid.uuid4()
-        cur = self.conn.cursor()
+        conn = psycopg2.connect(**self.params)
+        cur = conn.cursor()
         cur.execute(query, (el.name, el.symbol, el.dhkl, el.display_name, str(el_id)),)
-        self.conn.commit()
+        conn.commit()
         cur.close()
+        conn.close()
 
     def save_calculation(self, calc):
         query = """ INSERT INTO calculations(id, advanced, element_a_id, element_b_id, n_a, m_b, n, w_a, w_b, g_a, g_b, theta_2_min, theta_2_max, d_a_custom, d_b_custom, lambda, standard_error) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
-        cur = self.conn.cursor()
+        conn = psycopg2.connect(**self.params)
+        cur = conn.cursor()
         calc_id = uuid.uuid4()
         cur.execute(query, (str(calc_id), calc.advanced, calc.element_a.id, calc.element_b.id, calc.n_a, calc.m_b, calc.n, calc.w_a, 
                             calc.w_b, calc.g_a, calc.g_b, calc.theta_2_min, calc.theta_2_max, calc.d_a_custom, calc.d_b_custom, calc.lambda_length, calc.standard_error),)
-        self.conn.commit()
+        conn.commit()
         cur.close()
+        conn.close()
 
     def get_calculations(self, advanced):
         query = """ SELECT * FROM calculations 
@@ -64,10 +69,12 @@ class Database:
             query += 'WHERE advanced = false '
         query += 'ORDER BY created_date DESC LIMIT 100 '
 
-        cur = self.conn.cursor()
+        conn = psycopg2.connect(**self.params)
+        cur = conn.cursor()
         cur.execute(query, ())
         results = cur.fetchall()
         cur.close()
+        conn.close()
 
         calculations = []
 
@@ -87,10 +94,12 @@ class Database:
                     FROM updated
                     LEFT JOIN elements el_a ON updated.element_a_id = el_a.id 
                     LEFT JOIN elements el_b ON updated.element_b_id = el_b.id """
-        cur = self.conn.cursor()
+        conn = psycopg2.connect(**self.params)
+        cur = conn.cursor()
         cur.execute(query, (datetime.datetime.now(), id))
         r = cur.fetchone()
         cur.close()
+        conn.close()
 
         el_a = Element(r[18], r[19], r[20], r[21], r[22])
         el_b = Element(r[23], r[24], r[25], r[26], r[27])
@@ -100,6 +109,8 @@ class Database:
 
     def delete_calculation(self, id):
         query = 'DELETE FROM calculations WHERE id = %s'
-        cur = self.conn.cursor()
+        conn = psycopg2.connect(**self.params)
+        cur = conn.cursor()
         cur.execute(query, (str(id),))
         cur.close()
+        conn.close()
