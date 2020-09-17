@@ -318,6 +318,8 @@ var createDataTable = function(columns, data) {
             bVisible: false, aTargets: [0, 1, 2]
         }, {
             orderable: false, aTargets: [data[0].length - 1], 
+        },{
+            type: "date-eu", aTargets: data[0].length -2
         }]
     });
     setTimeout(() => dataTable.columns.adjust(), 150);
